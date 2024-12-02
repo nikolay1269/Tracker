@@ -13,6 +13,8 @@ class SplashViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 55.0 / 255.0, green: 114.0 / 255.0, blue: 231.0 / 255.0, alpha: 1.0)
         addLogoImage()
+        sleep(3)
+        swithToTrackersScreen()
     }
     
     private func addLogoImage() {
@@ -23,6 +25,18 @@ class SplashViewController: UIViewController {
         imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         imageView.widthAnchor.constraint(equalToConstant: 91).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 94).isActive = true
+    }
+    
+    private func swithToTrackersScreen() {
+        
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, let window = appDelegate.window else {
+            assertionFailure("Invalid window configuration")
+            return
+        }
+        
+        let trackersViewController = TrackersViewController()
+        window.rootViewController = trackersViewController
+        window.makeKeyAndVisible()
     }
 }
 

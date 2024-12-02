@@ -12,6 +12,11 @@
 		F31952132CF5AA0C009F3D77 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31952122CF5AA0C009F3D77 /* SplashViewController.swift */; };
 		F31952182CF5AA0E009F3D77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F31952172CF5AA0E009F3D77 /* Assets.xcassets */; };
 		F319521B2CF5AA0E009F3D77 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F31952192CF5AA0E009F3D77 /* LaunchScreen.storyboard */; };
+		F375D9E82CF87CBD00D19B7F /* TrackersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F375D9E72CF87CBD00D19B7F /* TrackersViewController.swift */; };
+		F375D9EB2CF8A04500D19B7F /* SF-Pro.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F375D9EA2CF8A03E00D19B7F /* SF-Pro.ttf */; };
+		F375D9EE2CF8A0A000D19B7F /* Date+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = F375D9ED2CF8A0A000D19B7F /* Date+String.swift */; };
+		F38ACA992CFB3CC3009A9753 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38ACA982CFB3CC3009A9753 /* TabBarController.swift */; };
+		F38ACA9B2CFB3D46009A9753 /* StatisticsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38ACA9A2CFB3D46009A9753 /* StatisticsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +27,11 @@
 		F31952172CF5AA0E009F3D77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F319521A2CF5AA0E009F3D77 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F319521C2CF5AA0E009F3D77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F375D9E72CF87CBD00D19B7F /* TrackersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrackersViewController.swift; sourceTree = "<group>"; };
+		F375D9EA2CF8A03E00D19B7F /* SF-Pro.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro.ttf"; sourceTree = "<group>"; };
+		F375D9ED2CF8A0A000D19B7F /* Date+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+String.swift"; sourceTree = "<group>"; };
+		F38ACA982CFB3CC3009A9753 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		F38ACA9A2CFB3D46009A9753 /* StatisticsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,14 +64,43 @@
 		F319520D2CF5AA0C009F3D77 /* Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				F38ACA9C2CFB3D4A009A9753 /* Statistics */,
+				F375D9EC2CF8A08E00D19B7F /* Extensions */,
+				F375D9E62CF87C8800D19B7F /* Trackers */,
 				F3DC95C72CF5F32300FF7CCE /* Splash */,
 				F319520E2CF5AA0C009F3D77 /* AppDelegate.swift */,
 				F31952102CF5AA0C009F3D77 /* SceneDelegate.swift */,
+				F38ACA982CFB3CC3009A9753 /* TabBarController.swift */,
+				F375D9EA2CF8A03E00D19B7F /* SF-Pro.ttf */,
 				F31952172CF5AA0E009F3D77 /* Assets.xcassets */,
 				F31952192CF5AA0E009F3D77 /* LaunchScreen.storyboard */,
 				F319521C2CF5AA0E009F3D77 /* Info.plist */,
 			);
 			path = Tracker;
+			sourceTree = "<group>";
+		};
+		F375D9E62CF87C8800D19B7F /* Trackers */ = {
+			isa = PBXGroup;
+			children = (
+				F375D9E72CF87CBD00D19B7F /* TrackersViewController.swift */,
+			);
+			path = Trackers;
+			sourceTree = "<group>";
+		};
+		F375D9EC2CF8A08E00D19B7F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				F375D9ED2CF8A0A000D19B7F /* Date+String.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		F38ACA9C2CFB3D4A009A9753 /* Statistics */ = {
+			isa = PBXGroup;
+			children = (
+				F38ACA9A2CFB3D46009A9753 /* StatisticsViewController.swift */,
+			);
+			path = Statistics;
 			sourceTree = "<group>";
 		};
 		F3DC95C72CF5F32300FF7CCE /* Splash */ = {
@@ -131,6 +170,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F319521B2CF5AA0E009F3D77 /* LaunchScreen.storyboard in Resources */,
+				F375D9EB2CF8A04500D19B7F /* SF-Pro.ttf in Resources */,
 				F31952182CF5AA0E009F3D77 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -143,8 +183,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F31952132CF5AA0C009F3D77 /* SplashViewController.swift in Sources */,
+				F375D9E82CF87CBD00D19B7F /* TrackersViewController.swift in Sources */,
 				F319520F2CF5AA0C009F3D77 /* AppDelegate.swift in Sources */,
+				F38ACA992CFB3CC3009A9753 /* TabBarController.swift in Sources */,
+				F375D9EE2CF8A0A000D19B7F /* Date+String.swift in Sources */,
 				F31952112CF5AA0C009F3D77 /* SceneDelegate.swift in Sources */,
+				F38ACA9B2CFB3D46009A9753 /* StatisticsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
