@@ -16,6 +16,9 @@ class TrackersViewController: UIViewController {
     private var searchController: UISearchController?
     private var collectionView: UICollectionView?
     private var emptyView: UIView?
+    
+    var categories: [TrackerCategory] = []
+    var completedTrackers: [TrackerRecord] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
