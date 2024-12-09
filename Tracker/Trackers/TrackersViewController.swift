@@ -26,11 +26,12 @@ class TrackersViewController: UIViewController {
         //addPlusButton()
         //addDateTimeLabel()
         addLeftNavigationBarItem()
-        addRightNavigationBarItem()
+        //addRightNavigationBarItem()
         addTrackersLabel()
         //addSearchBar()
         addCollectionView()
         addEmptyView()
+        addDateTimePicker()
     }
     
     private func addLeftNavigationBarItem() {
@@ -40,6 +41,28 @@ class TrackersViewController: UIViewController {
     
     @objc private func plusButtonTap() {
         print("Plus button tapped")
+    }
+    
+    private func addDateTimePicker() {
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .compact
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
+        let currentDate = Date()
+        let calendar = Calendar.current
+        let minDate = calendar.date(byAdding: .year, value: -10, to: currentDate)
+        let maxDate = calendar.date(byAdding: .year, value: 10, to: currentDate)
+        datePicker.minimumDate = minDate
+        datePicker.maximumDate = maxDate
+        datePicker.addTarget(self, action: #selector(datePickerValueChange(_:)), for: .valueChanged)
+    }
+    
+    @objc func datePickerValueChange(_ sender: UIDatePicker) {
+        let selectedDate = sender.date
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        let formattedDate = dateFormatter.string(from: selectedDate)
+        print("Выбранная дата: \(formattedDate)")
     }
     
     private func addRightNavigationBarItem() {
