@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TrackersViewController: UIViewController {
+final class TrackersViewController: UIViewController {
     
     private var plusButton: UIButton?
     private var dateTimeLabel: UILabel?
@@ -19,19 +19,30 @@ class TrackersViewController: UIViewController {
     
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
+    
+    private let cellIdentifier = "trackCellIdentifier"
+    private let headerIdentifier = "headerIdentifier"
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        //addPlusButton()
-        //addDateTimeLabel()
         addLeftNavigationBarItem()
-        //addRightNavigationBarItem()
         addTrackersLabel()
-        //addSearchBar()
         addCollectionView()
         addEmptyView()
         addDateTimePicker()
+        emptyView?.isHidden = true
+        collectionView?.reloadData()
+        generateTestData()
+    }
+    
+    private func generateTestData() {
+        let morningTrackers = [Tracker(id: "1", name: "Выпить стакан воды", color: .yellow, emoji: "😌", schedule: "Every day"),
+                    Tracker(id: "2", name: "Зарядка", color: .red, emoji: "😙", schedule: "Every day")]
+        let weeklyTrackers = [Tracker(id: "3", name: "Бассейн", color: .blue, emoji: "😍", schedule: "Weekly")]
+        let morningCategory = TrackerCategory(name: "Утро", trackers: morningTrackers)
+        let weeklyCategory = TrackerCategory(name: "Еженедельные", trackers: weeklyTrackers)
+        categories = [morningCategory, weeklyCategory]
     }
     
     private func addLeftNavigationBarItem() {
@@ -63,25 +74,6 @@ class TrackersViewController: UIViewController {
         dateFormatter.dateFormat = "dd.MM.yyyy"
         let formattedDate = dateFormatter.string(from: selectedDate)
         print("Выбранная дата: \(formattedDate)")
-    }
-    
-    private func addRightNavigationBarItem() {
-        
-        let button = UIButton(type: .custom)
-        button.frame = CGRect(x: 0, y: 0, width: 77, height: 34)
-        let color = UIColor(red: 240.0 / 255.0, green: 240.0 / 255.0, blue: 240.0 / 255.0, alpha: 1.0)
-        button.backgroundColor = color
-        button.layer.cornerRadius = 10
-        let font = UIFont(name: "SF Pro Regular", size: 17)
-        let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.font: font ?? UIFont.systemFont(ofSize: 17), NSAttributedString.Key.foregroundColor: UIColor.black]
-        let attributedString = NSAttributedString(string: Date().stringFromDateForTrackersScreen()!,
-                                                  attributes: attributes)
-        button.setAttributedTitle(attributedString, for: .normal)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
-    }
-    
-    @objc private func dateLabelTapped() {
-        print("Date button tapped")
     }
     
     private func addTrackersLabel() {
@@ -123,16 +115,20 @@ class TrackersViewController: UIViewController {
         
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.itemSize = CGSize(width: 167, height: 167)
+        //layout.itemSize = CGSize(width: 167, height: 148)
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
+        collectionView.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
+        collectionView.register(SupplementaryView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerIdentifier)
         collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         if let trackersLabel = trackersLabel {
             collectionView.topAnchor.constraint(equalTo: trackersLabel.bottomAnchor, constant: 5).isActive = true
         }
         collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        collectionView.dataSource = self
+        collectionView.delegate = self
         self.collectionView = collectionView
     }
     
@@ -170,48 +166,50 @@ class TrackersViewController: UIViewController {
     private func changeEmptyStateForCollectionView(show: Bool) {
         emptyView?.isHidden = !show
     }
+}
+
+extension TrackersViewController: UICollectionViewDataSource {
     
-//    private func addPlusButton() {
-//        let plusButton = UIButton()
-//        plusButton.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(plusButton)
-//        plusButton.heightAnchor.constraint(equalToConstant: 42).isActive = true
-//        plusButton.widthAnchor.constraint(equalToConstant: 42).isActive = true
-//        plusButton.setImage(UIImage(named: "plus"), for: .normal)
-//        plusButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 6).isActive = true
-//        plusButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 45).isActive = true
-//        self.plusButton = plusButton
-//    }
-//
-//    private func addDateTimeLabel() {
-//        let containerViewForLabel = UIView()
-//        containerViewForLabel.translatesAutoresizingMaskIntoConstraints = false
-//        containerViewForLabel.backgroundColor = UIColor(named: "BackgroundLabelColor")
-//        view.addSubview(containerViewForLabel)
-//        let dateTimeLabel = UILabel()
-//        dateTimeLabel.translatesAutoresizingMaskIntoConstraints = false
-//        dateTimeLabel.text = Date().stringFromDateForTrackersScreen()
-//        containerViewForLabel.addSubview(dateTimeLabel)
-//        dateTimeLabel.backgroundColor = .clear
-//        containerViewForLabel.layer.cornerRadius = 8
-//        dateTimeLabel.font = UIFont(name: "SF Pro Regular", size: 17)
-//        dateTimeLabel.textAlignment = .right
-//        containerViewForLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-//        containerViewForLabel.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -5).isActive = true
-//        dateTimeLabel.leadingAnchor.constraint(equalTo: containerViewForLabel.leadingAnchor, constant: 6).isActive = true
-//        dateTimeLabel.trailingAnchor.constraint(equalTo: containerViewForLabel.trailingAnchor, constant: -6).isActive = true
-//        dateTimeLabel.topAnchor.constraint(equalTo: containerViewForLabel.topAnchor, constant: 6).isActive = true
-//        dateTimeLabel.bottomAnchor.constraint(equalTo: containerViewForLabel.bottomAnchor, constant: -6).isActive = true
-//    }
-//
-//    private func addImageView() {
-//
-//        let imageView = UIImageView(image: UIImage(named: "TrackersEmptyScreen"))
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(imageView)
-//        imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-//        imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-//        imageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
-//    }
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return categories.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        let trackers = categories[section].trackers
+        return trackers.count
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? TrackerCollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        
+        let trackers = categories[indexPath.section].trackers
+        let tracker = trackers[indexPath.row]
+        cell.configureCell(tracker: tracker)
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerIdentifier, for: indexPath) as? SupplementaryView else { return UICollectionReusableView() }
+        view.titleLabel.text = categories[indexPath.section].name
+        return view
+    }
+}
+
+extension TrackersViewController: UICollectionViewDelegateFlowLayout {
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+
+        return CGSize(width: 167, height: 148)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        
+        return CGSize(width: collectionView.frame.width, height: 46)
+    }
 }

@@ -12,9 +12,11 @@
 		F31952132CF5AA0C009F3D77 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31952122CF5AA0C009F3D77 /* SplashViewController.swift */; };
 		F31952182CF5AA0E009F3D77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F31952172CF5AA0E009F3D77 /* Assets.xcassets */; };
 		F319521B2CF5AA0E009F3D77 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F31952192CF5AA0E009F3D77 /* LaunchScreen.storyboard */; };
+		F36A489E2D0976C4008DBDD6 /* SupplementaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36A489D2D0976C4008DBDD6 /* SupplementaryView.swift */; };
 		F375D9E82CF87CBD00D19B7F /* TrackersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F375D9E72CF87CBD00D19B7F /* TrackersViewController.swift */; };
 		F375D9EB2CF8A04500D19B7F /* SF-Pro.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F375D9EA2CF8A03E00D19B7F /* SF-Pro.ttf */; };
 		F375D9EE2CF8A0A000D19B7F /* Date+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = F375D9ED2CF8A0A000D19B7F /* Date+String.swift */; };
+		F37FA9512D06CC19004EEC83 /* TrackerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37FA9502D06CC19004EEC83 /* TrackerCollectionViewCell.swift */; };
 		F38ACA992CFB3CC3009A9753 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38ACA982CFB3CC3009A9753 /* TabBarController.swift */; };
 		F38ACA9B2CFB3D46009A9753 /* StatisticsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38ACA9A2CFB3D46009A9753 /* StatisticsViewController.swift */; };
 		F3DF95002D0069F10060DD1E /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DF94FF2D0069F10060DD1E /* Tracker.swift */; };
@@ -30,9 +32,11 @@
 		F31952172CF5AA0E009F3D77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F319521A2CF5AA0E009F3D77 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F319521C2CF5AA0E009F3D77 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F36A489D2D0976C4008DBDD6 /* SupplementaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementaryView.swift; sourceTree = "<group>"; };
 		F375D9E72CF87CBD00D19B7F /* TrackersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrackersViewController.swift; sourceTree = "<group>"; };
 		F375D9EA2CF8A03E00D19B7F /* SF-Pro.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro.ttf"; sourceTree = "<group>"; };
 		F375D9ED2CF8A0A000D19B7F /* Date+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+String.swift"; sourceTree = "<group>"; };
+		F37FA9502D06CC19004EEC83 /* TrackerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCollectionViewCell.swift; sourceTree = "<group>"; };
 		F38ACA982CFB3CC3009A9753 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		F38ACA9A2CFB3D46009A9753 /* StatisticsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewController.swift; sourceTree = "<group>"; };
 		F3DF94FF2D0069F10060DD1E /* Tracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracker.swift; sourceTree = "<group>"; };
@@ -92,6 +96,8 @@
 				F3DF94FF2D0069F10060DD1E /* Tracker.swift */,
 				F3DF95012D006B0F0060DD1E /* TrackerCategory.swift */,
 				F3DF95032D006B5B0060DD1E /* TrackerRecord.swift */,
+				F37FA9502D06CC19004EEC83 /* TrackerCollectionViewCell.swift */,
+				F36A489D2D0976C4008DBDD6 /* SupplementaryView.swift */,
 			);
 			path = Trackers;
 			sourceTree = "<group>";
@@ -196,6 +202,8 @@
 				F375D9E82CF87CBD00D19B7F /* TrackersViewController.swift in Sources */,
 				F319520F2CF5AA0C009F3D77 /* AppDelegate.swift in Sources */,
 				F38ACA992CFB3CC3009A9753 /* TabBarController.swift in Sources */,
+				F37FA9512D06CC19004EEC83 /* TrackerCollectionViewCell.swift in Sources */,
+				F36A489E2D0976C4008DBDD6 /* SupplementaryView.swift in Sources */,
 				F3DF95042D006B5B0060DD1E /* TrackerRecord.swift in Sources */,
 				F3DF95002D0069F10060DD1E /* Tracker.swift in Sources */,
 				F375D9EE2CF8A0A000D19B7F /* Date+String.swift in Sources */,
