@@ -14,4 +14,8 @@ extension Date {
         let string = dateFormatter.string(from: self)
         return string
     }
+    
+    func scheduleComparison(date: Date) -> ComparisonResult {
+        return Calendar.current.compare(self, to: date, toGranularity: .day)
+    }
 }

@@ -12,8 +12,10 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     let trackerNameLabel = UILabel()
     let emojiLabel = UILabel()
     let emojiContainerView = UIView()
-    let plusButton = UIButton()
+    let statusButton = UIButton()
     let mainView = UIView()
+    let daysCountLabel = UILabel()
+    var isDone = false
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,19 +25,49 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         addEmoji()
         addTrackerLabel()
         addPlusButton()
+        addDaysCountLabel()
+    }
+    
+    private func addDaysCountLabel() {
+        daysCountLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(daysCountLabel)
+        daysCountLabel.text = "0 дней"
+        daysCountLabel.font = UIFont(name: "SF Pro Regualr", size: 12)
+        daysCountLabel.numberOfLines = 0
+        daysCountLabel.centerYAnchor.constraint(equalTo: statusButton.centerYAnchor).isActive = true
+        daysCountLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12).isActive = true
+        daysCountLabel.trailingAnchor.constraint(equalTo: statusButton.leadingAnchor).isActive = true
     }
     
     private func addPlusButton() {
-        plusButton.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(plusButton)
-        plusButton.layer.cornerRadius = 17
-        plusButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        plusButton.tintColor = UIColor(named: "YPWhite")
-        plusButton.heightAnchor.constraint(equalToConstant: 34).isActive = true
-        plusButton.widthAnchor.constraint(equalToConstant: 34).isActive = true
-        plusButton.topAnchor.constraint(equalTo: mainView.bottomAnchor, constant: 8).isActive = true
-        plusButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
-        plusButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -12).isActive = true
+        statusButton.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(statusButton)
+        statusButton.layer.cornerRadius = 17
+        changeStatus(isDone: isDone)
+        statusButton.tintColor = UIColor(named: "YPWhite")
+        statusButton.heightAnchor.constraint(equalToConstant: 34).isActive = true
+        statusButton.widthAnchor.constraint(equalToConstant: 34).isActive = true
+        statusButton.topAnchor.constraint(equalTo: mainView.bottomAnchor, constant: 8).isActive = true
+        statusButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
+        statusButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -12).isActive = true
+        statusButton.addTarget(self, action: #selector(statusButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func statusButtonTapped() {
+        
+        changeStatus(isDone: !isDone)
+        isDone = !isDone
+    }
+    
+    private func changeStatus(isDone: Bool) {
+        switch(isDone) {
+        case true:
+            statusButton.setImage(UIImage(named: "done_white"), for: .normal)
+            statusButton.alpha = 0.3
+        case false:
+            statusButton.setImage(UIImage(named: "plus_black")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            statusButton.alpha = 1
+        }
     }
     
     private func addEmoji() {
@@ -82,7 +114,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         trackerNameLabel.textAlignment = .left
         trackerNameLabel.textColor = UIColor(named: "YPWhite")
         mainView.addSubview(trackerNameLabel)
-        trackerNameLabel.font = UIFont(name: "SF Pro Regular", size: 12)
+        trackerNameLabel.font = UIFont(name: "SF Pro Medium", size: 12)
         trackerNameLabel.textColor = UIColor(named: "TextColor")
         trackerNameLabel.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 12).isActive = true
         trackerNameLabel.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: 12).isActive = true
@@ -91,7 +123,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     func configureCell(tracker: Tracker) {
         mainView.backgroundColor = tracker.color
-        plusButton.backgroundColor = tracker.color
+        statusButton.backgroundColor = tracker.color
         trackerNameLabel.text = tracker.name
         emojiLabel.text = tracker.emoji
     }

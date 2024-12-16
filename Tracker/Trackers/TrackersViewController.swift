@@ -22,6 +22,8 @@ final class TrackersViewController: UIViewController {
     
     private let cellIdentifier = "trackCellIdentifier"
     private let headerIdentifier = "headerIdentifier"
+    
+    private var currentDate: Date = Date()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,9 +39,12 @@ final class TrackersViewController: UIViewController {
     }
     
     private func generateTestData() {
-        let morningTrackers = [Tracker(id: "1", name: "Выпить стакан воды", color: .yellow, emoji: "😌", schedule: "Every day"),
-                    Tracker(id: "2", name: "Зарядка", color: .red, emoji: "😙", schedule: "Every day")]
-        let weeklyTrackers = [Tracker(id: "3", name: "Бассейн", color: .blue, emoji: "😍", schedule: "Weekly")]
+        let today = Date()
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today) ?? Date()
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today) ?? Date()
+        let allDays = [yesterday: false, today: false, tomorrow: false]
+        let morningTrackers = [Tracker(id: "1", name: "Выпить стакан воды", color: .yellow, emoji: "😌", schedule: allDays), Tracker(id: "2", name: "Зарядка", color: .red, emoji: "😙", schedule: allDays)]
+        let weeklyTrackers = [Tracker(id: "3", name: "Бассейн", color: .blue, emoji: "😍", schedule: allDays)]
         let morningCategory = TrackerCategory(name: "Утро", trackers: morningTrackers)
         let weeklyCategory = TrackerCategory(name: "Еженедельные", trackers: weeklyTrackers)
         categories = [morningCategory, weeklyCategory]
@@ -51,11 +56,13 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func plusButtonTap() {
-        print("Plus button tapped")
+        let createTrackerViewController = CreateTrackerViewController()
+        self.present(createTrackerViewController, animated: true)
     }
     
     private func addDateTimePicker() {
         let datePicker = UIDatePicker()
+        datePicker.date = currentDate
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
@@ -73,6 +80,9 @@ final class TrackersViewController: UIViewController {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd.MM.yyyy"
         let formattedDate = dateFormatter.string(from: selectedDate)
+        currentDate = selectedDate
+        //Remove trackers not for selected date
+        collectionView?.reloadData()
         print("Выбранная дата: \(formattedDate)")
     }
     
@@ -102,7 +112,7 @@ final class TrackersViewController: UIViewController {
             searchBar.text = "Поиск"
             searchBar.layer.cornerRadius = 10
             searchBar.searchTextField.textColor = UIColor(named: "SearchPlaceHolderTextColor")
-            searchBar.searchTextField.font = UIFont(name: "SF Pro Regular", size: 17)
+            searchBar.searchTextField.font = UIFont(name: "SF Pro Medium", size: 17)
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
             if let trackersLabel = trackersLabel {
                 searchBar.topAnchor.constraint(equalTo: trackersLabel.bottomAnchor, constant: 7).isActive = true
@@ -115,7 +125,6 @@ final class TrackersViewController: UIViewController {
         
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        //layout.itemSize = CGSize(width: 167, height: 148)
         let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
