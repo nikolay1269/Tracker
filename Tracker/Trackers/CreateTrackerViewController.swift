@@ -47,7 +47,9 @@ class CreateTrackerViewController: UIViewController {
     }
     
     @objc private func habitButtonTapped() {
-        print("Habbit button tapped")
+        
+        let createHabitViewController = CreateHabitViewController()
+        self.present(createHabitViewController, animated: true)
     }
     
     private func addEventButton() {
@@ -66,6 +68,8 @@ class CreateTrackerViewController: UIViewController {
     }
     
     @objc private func eventButtonTapped() {
-        print("Event button tapped")
+        
+        let eventViewController = CreateEventViewController()
+        self.present(eventViewController, animated: true)
     }
 }
