@@ -16,6 +16,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     let mainView = UIView()
     let daysCountLabel = UILabel()
     var isDone = false
+    var trackerStatusChanged: ((Bool) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,7 +25,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         addMainView()
         addEmoji()
         addTrackerLabel()
-        addPlusButton()
+        addStatusButton()
         addDaysCountLabel()
     }
     
@@ -39,7 +40,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         daysCountLabel.trailingAnchor.constraint(equalTo: statusButton.leadingAnchor).isActive = true
     }
     
-    private func addPlusButton() {
+    private func addStatusButton() {
         statusButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(statusButton)
         statusButton.layer.cornerRadius = 17
@@ -57,6 +58,8 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         
         changeStatus(isDone: !isDone)
         isDone = !isDone
+        guard let trackerStatusChanged = trackerStatusChanged else { return }
+        trackerStatusChanged(isDone)
     }
     
     private func changeStatus(isDone: Bool) {

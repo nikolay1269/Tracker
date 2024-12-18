@@ -9,9 +9,11 @@ import UIKit
 
 class CreateTrackerViewController: UIViewController {
     
-    let titleLabel = UILabel()
-    let habitButton = UIButton()
-    let eventButton = UIButton()
+    private let titleLabel = UILabel()
+    private let habitButton = UIButton()
+    private let eventButton = UIButton()
+    private var newTracker: Tracker?
+    var trackerCreated: ((Tracker) -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,6 +51,14 @@ class CreateTrackerViewController: UIViewController {
     @objc private func habitButtonTapped() {
         
         let createHabitViewController = CreateHabitViewController()
+        createHabitViewController.trackerCreated = { [weak self] newTracker in
+            
+            guard let self = self else { return }
+            self.newTracker = newTracker
+            guard let trackerCreated = self.trackerCreated else { return }
+            trackerCreated(newTracker)
+            self.dismiss(animated: false)
+        }
         self.present(createHabitViewController, animated: true)
     }
     

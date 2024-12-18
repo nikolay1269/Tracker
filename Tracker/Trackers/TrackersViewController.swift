@@ -19,6 +19,7 @@ final class TrackersViewController: UIViewController {
     
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
+    var competedTrackersUUIDs = Set<UUID>()
     
     private let cellIdentifier = "trackCellIdentifier"
     private let headerIdentifier = "headerIdentifier"
@@ -39,25 +40,32 @@ final class TrackersViewController: UIViewController {
     }
     
     private func generateTestData() {
-        let today = Date()
-        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today) ?? Date()
-        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today) ?? Date()
-        let allDays = [yesterday: false, today: false, tomorrow: false]
-        let morningTrackers = [Tracker(id: "1", name: "Выпить стакан воды", color: .yellow, emoji: "😌", schedule: allDays), Tracker(id: "2", name: "Зарядка", color: .red, emoji: "😙", schedule: allDays)]
-        let weeklyTrackers = [Tracker(id: "3", name: "Бассейн", color: .blue, emoji: "😍", schedule: allDays)]
-        let morningCategory = TrackerCategory(name: "Утро", trackers: morningTrackers)
-        let weeklyCategory = TrackerCategory(name: "Еженедельные", trackers: weeklyTrackers)
-        categories = [morningCategory, weeklyCategory]
+        categories = [TrackerCategory(name: "Важное", trackers: [])]
     }
     
     private func addLeftNavigationBarItem() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTap))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped))
         navigationItem.leftBarButtonItem?.tintColor = .black
     }
     
-    @objc private func plusButtonTap() {
+    @objc private func plusButtonTapped() {
         let createTrackerViewController = CreateTrackerViewController()
+        createTrackerViewController.trackerCreated = { [weak self] newTracker in
+            
+            guard let self = self else { return }
+            self.addNewTracker(tracker: newTracker)
+            self.collectionView?.reloadData()
+        }
         self.present(createTrackerViewController, animated: true)
+    }
+    
+    private func addNewTracker(tracker: Tracker) {
+        let oldCategory = categories.first
+        var newTrackers = oldCategory?.trackers
+        newTrackers?.append(tracker)
+        guard let newTrackers = newTrackers, let oldCategory = oldCategory else { return }
+        let newCategory = TrackerCategory(name: oldCategory.name, trackers: newTrackers)
+        categories = [newCategory]
     }
     
     private func addDateTimePicker() {
@@ -195,10 +203,29 @@ extension TrackersViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? TrackerCollectionViewCell else {
             return UICollectionViewCell()
         }
-        
         let trackers = categories[indexPath.section].trackers
         let tracker = trackers[indexPath.row]
         cell.configureCell(tracker: tracker)
+        cell.trackerStatusChanged = { [weak self] isDone in
+            guard let self = self else { return }
+            if isDone {
+                if self.competedTrackersUUIDs.contains(tracker.id) == false {
+                    let trackerRecord = TrackerRecord(id: tracker.id, date: Date())
+                    self.completedTrackers.append(trackerRecord)
+                    self.competedTrackersUUIDs.insert(tracker.id)
+                }
+            } else {
+                if self.competedTrackersUUIDs.contains(tracker.id) {
+                    for (index, competedTracker) in self.completedTrackers.enumerated() {
+                        if competedTracker.id == tracker.id {
+                            self.completedTrackers.remove(at: index)
+                            self.competedTrackersUUIDs.remove(tracker.id)
+                            break
+                        }
+                    }
+                }
+            }
+        }
         return cell
     }
     
