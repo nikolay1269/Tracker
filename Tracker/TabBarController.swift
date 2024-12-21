@@ -15,7 +15,6 @@ final class TabBarController: UITabBarController {
         
         let trackersViewController = TrackersViewController()
         let navigationViewController = UINavigationController(rootViewController: trackersViewController)
-        //navigationViewController.viewControllers = [trackersViewController]
         navigationViewController.navigationBar.barStyle = .black
         navigationViewController.tabBarItem = UITabBarItem(title: "Трекеры", image: UIImage(named: "TrackersInactive"), selectedImage: UIImage(named: "TrackersActive"))
         

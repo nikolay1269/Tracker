@@ -88,12 +88,11 @@ final class TrackersViewController: UIViewController {
         datePicker.minimumDate = minDate
         datePicker.maximumDate = maxDate
         datePicker.addTarget(self, action: #selector(datePickerValueChange(_:)), for: .valueChanged)
+        datePicker.widthAnchor.constraint(equalToConstant: 100).isActive = true
     }
     
     @objc func datePickerValueChange(_ sender: UIDatePicker) {
         let selectedDate = sender.date
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd.MM.yyyy"
         currentDate = selectedDate
         filterCategoriesByDateAndSearchText()
         collectionView?.reloadData()
