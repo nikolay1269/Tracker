@@ -7,26 +7,39 @@
 
 import UIKit
 
-enum HabitParams: Int {
+enum TrackerParams: Int {
     case category
     case schedule
 }
 
-class CreateHabitViewController: UIViewController {
+enum TrackerType: Int {
+    case habit
+    case event
+}
+
+class CreateTrackerViewController: UIViewController {
     
     private let titleLabel = UILabel()
     private let nameTextField = UITextField()
     private let createButton = UIButton()
     private let cancelButton = UIButton()
     private let tableView = UITableView()
+    private let maxLengthLabel = UILabel()
+    private var nameStackView = UIStackView()
+    private var maxLabelHeightConstraint: NSLayoutConstraint?
+    
+    private let nameMaxLength = 38
     var dayOfWeekSelected: Set<WeekDay> = Set<WeekDay>()
     var trackerCreated: ((Tracker) -> Void)?
+    var trackerType: TrackerType?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         addTitleLabel()
         addNameTextField()
+        addMaxLengthLabel()
+        addNameStackView()
         addCreateButton()
         addCancelButton()
         addParamsTalbeView()
@@ -37,19 +50,46 @@ class CreateHabitViewController: UIViewController {
         view.addSubview(titleLabel)
         titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 35).isActive = true
         titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        titleLabel.text = "Новая привычка"
+        switch(trackerType) {
+        case .habit:
+            titleLabel.text = "Новая привычка"
+        case .event:
+            titleLabel.text = "Новое нерегулярное событие"
+        case .none:
+            break
+        }
         titleLabel.font = UIFont(name: "SF Pro Medium", size: 16)
         titleLabel.textColor = UIColor(named: "YPBlack")
         titleLabel.textAlignment = .center
     }
     
+    private func addMaxLengthLabel() {
+        maxLengthLabel.translatesAutoresizingMaskIntoConstraints = false
+        maxLabelHeightConstraint =  maxLengthLabel.heightAnchor.constraint(equalToConstant: 0)
+        maxLabelHeightConstraint?.isActive = true
+        maxLengthLabel.text = "Ограничение 38 символов"
+        maxLengthLabel.textAlignment = .center
+        maxLengthLabel.textColor = UIColor(named: "YPRed")
+        maxLengthLabel.font = UIFont(name: "SF Pro Regular", size: 17)
+    }
+    
+    private func addNameStackView() {
+        nameStackView = UIStackView(arrangedSubviews: [nameTextField, maxLengthLabel])
+        nameStackView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(nameStackView)
+        nameStackView.spacing = 8
+        nameStackView.distribution = .fillProportionally
+        nameStackView.axis = .vertical
+        nameStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24).isActive = true
+        nameStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        nameStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        nameStackView.isUserInteractionEnabled = true
+    }
+    
     private func addNameTextField() {
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(nameTextField)
+        nameStackView.addSubview(nameTextField)
         nameTextField.placeholder = "Введите название трекера"
-        nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        nameTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24).isActive = true
         nameTextField.font = UIFont(name: "SF Pro Regular", size: 17)
         nameTextField.backgroundColor = UIColor(named: "TextFieldBackgroundColor")
         nameTextField.heightAnchor.constraint(equalToConstant: 75).isActive = true
@@ -58,6 +98,35 @@ class CreateHabitViewController: UIViewController {
         paddingView.backgroundColor = .clear
         nameTextField.leftView = paddingView
         nameTextField.leftViewMode = .always
+        nameTextField.addTarget(self, action: #selector(nameTextFieldEditingChanged), for: .editingChanged)
+    }
+    
+    @objc private func nameTextFieldEditingChanged() {
+        checkMaxLenght()
+        setCreateButtonEnabled()
+    }
+    
+    private func checkMaxLenght() {
+        if let textLength = nameTextField.text?.count, textLength > nameMaxLength {
+            maxLabelHeightConstraint?.constant = 30
+        } else {
+            maxLabelHeightConstraint?.constant = 0
+        }
+    }
+    
+    private func setCreateButtonEnabled() {
+        if allRequiredFieldsNotEmpty() == true {
+            createButton.backgroundColor = UIColor(named: "YPBlack")
+            createButton.isEnabled = true
+        } else {
+            createButton.backgroundColor = UIColor(named: "YPGray")
+            createButton.isEnabled = false
+        }
+    }
+    
+    private func allRequiredFieldsNotEmpty() -> Bool {
+        guard let count = nameTextField.text?.count, count > 0 && count <= nameMaxLength && (dayOfWeekSelected.count > 0 || trackerType == .event) else { return false }
+        return true
     }
     
     private func addCreateButton() {
@@ -70,6 +139,7 @@ class CreateHabitViewController: UIViewController {
         createButton.setAttributedTitle(attributedTitle, for: .normal)
         createButton.layer.cornerRadius = 16
         createButton.backgroundColor = UIColor(named: "YPGray")
+        createButton.isEnabled = false
         createButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
         createButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -34).isActive = true
         createButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
@@ -77,15 +147,13 @@ class CreateHabitViewController: UIViewController {
     }
     
     @objc private func createButtonTapped() {
-        
         guard let trackerCreated = trackerCreated else { return }
         self.dismiss(animated: true)
         trackerCreated(createTracker())
     }
     
     private func createTracker() -> Tracker {
-        
-        return Tracker(id: UUID(), name: nameTextField.text ?? "", color: .green, emoji: "😌", schedule: dayOfWeekSelected)
+        Tracker(id: UUID(), name: nameTextField.text ?? "", color: UIColor(named: "TCGreen") ?? .green, emoji: "🙂", schedule: dayOfWeekSelected)
     }
     
     private func addCancelButton() {
@@ -108,7 +176,7 @@ class CreateHabitViewController: UIViewController {
     }
     
     @objc private func cancelButtonTapped() {
-        self.dismiss(animated: true)
+        dismiss(animated: true)
     }
     
     private func addParamsTalbeView() {
@@ -117,7 +185,7 @@ class CreateHabitViewController: UIViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        tableView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24).isActive = true
+        tableView.topAnchor.constraint(equalTo: nameStackView.bottomAnchor, constant: 24).isActive = true
         tableView.heightAnchor.constraint(equalToConstant: 150).isActive = true
         tableView.dataSource = self
         tableView.delegate = self
@@ -130,10 +198,18 @@ class CreateHabitViewController: UIViewController {
     }
 }
 
-extension CreateHabitViewController: UITableViewDataSource {
+extension CreateTrackerViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        
+        switch(trackerType) {
+        case .habit:
+            return 2
+        case .event:
+            return 1
+        case .none:
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -146,9 +222,10 @@ extension CreateHabitViewController: UITableViewDataSource {
         cell.backgroundColor = UIColor(named: "TextFieldBackgroundColor")
         cell.accessoryType = .disclosureIndicator
         switch (indexPath.row) {
-        case HabitParams.category.rawValue:
+        case TrackerParams.category.rawValue:
             cell.textLabel?.text = "Категория"
-        case HabitParams.schedule.rawValue:
+            cell.detailTextLabel?.text = "Важное"
+        case TrackerParams.schedule.rawValue:
             cell.textLabel?.text = "Расписание"
         default:
             break
@@ -157,19 +234,20 @@ extension CreateHabitViewController: UITableViewDataSource {
     }
 }
 
-extension CreateHabitViewController: UITableViewDelegate {
+extension CreateTrackerViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         switch(indexPath.row) {
-        case HabitParams.category.rawValue:
+        case TrackerParams.category.rawValue:
             print("Select default category")
-        case HabitParams.schedule.rawValue:
+        case TrackerParams.schedule.rawValue:
             let scheduleViewController = ScheduleViewController()
             scheduleViewController.scheduleSelected = { [weak self] dayOfWeekSelected in
+                guard let self = self else { return }
                 var scheduleInfo: String = ""
                 for dayOfWeek in dayOfWeekSelected.sorted(by: { weekday1, weekday2 in
-                    weekday1.rawValue < weekday2.rawValue
+                    (weekday1.rawValue < weekday2.rawValue || weekday2 == .sunday) && !(weekday1 == .sunday)
                 }) {
                     var shortDayOfWeek = ""
                     switch(dayOfWeek) {
@@ -193,9 +271,10 @@ extension CreateHabitViewController: UITableViewDelegate {
                 if scheduleInfo.count > 1 {
                     scheduleInfo.removeLast(2)
                 }
-                self?.dayOfWeekSelected = dayOfWeekSelected
-                guard let cell = tableView.cellForRow(at: IndexPath(row: HabitParams.schedule.rawValue, section: 0)) else { return }
+                self.dayOfWeekSelected = dayOfWeekSelected
+                guard let cell = tableView.cellForRow(at: IndexPath(row: TrackerParams.schedule.rawValue, section: 0)) else { return }
                 cell.detailTextLabel?.text = scheduleInfo
+                self.setCreateButtonEnabled()
             }
             self.present(scheduleViewController, animated: true)
         default:

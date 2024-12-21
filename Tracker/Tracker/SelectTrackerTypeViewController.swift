@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CreateTrackerViewController: UIViewController {
+class SelectTrackerTypeViewController: UIViewController {
     
     private let titleLabel = UILabel()
     private let habitButton = UIButton()
@@ -36,6 +36,7 @@ class CreateTrackerViewController: UIViewController {
     private func addHabitButton() {
         habitButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(habitButton)
+        habitButton.tag = TrackerType.habit.rawValue
         habitButton.backgroundColor = UIColor(named: "YPBlack")
         let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.font : UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 16),
                                                           NSAttributedString.Key.foregroundColor : UIColor.white]
@@ -45,26 +46,13 @@ class CreateTrackerViewController: UIViewController {
         habitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         habitButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -38).isActive = true
         habitButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        habitButton.addTarget(self, action: #selector(habitButtonTapped), for: .touchUpInside)
-    }
-    
-    @objc private func habitButtonTapped() {
-        
-        let createHabitViewController = CreateHabitViewController()
-        createHabitViewController.trackerCreated = { [weak self] newTracker in
-            
-            guard let self = self else { return }
-            self.newTracker = newTracker
-            guard let trackerCreated = self.trackerCreated else { return }
-            trackerCreated(newTracker)
-            self.dismiss(animated: false)
-        }
-        self.present(createHabitViewController, animated: true)
+        habitButton.addTarget(self, action: #selector(trackerTypeButtonTapped(sender:)), for: .touchUpInside)
     }
     
     private func addEventButton() {
         eventButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(eventButton)
+        eventButton.tag = TrackerType.event.rawValue
         eventButton.backgroundColor = UIColor(named: "YPBlack")
         let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.font : UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 16),
                                                           NSAttributedString.Key.foregroundColor : UIColor.white]
@@ -74,12 +62,27 @@ class CreateTrackerViewController: UIViewController {
         eventButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         eventButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 38).isActive = true
         eventButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        eventButton.addTarget(self, action: #selector(eventButtonTapped), for: .touchUpInside)
+        eventButton.addTarget(self, action: #selector(trackerTypeButtonTapped(sender:)), for: .touchUpInside)
     }
     
-    @objc private func eventButtonTapped() {
+    @objc private func trackerTypeButtonTapped(sender: UIButton) {
         
-        let eventViewController = CreateEventViewController()
-        self.present(eventViewController, animated: true)
+        let createHabitViewController = CreateTrackerViewController()
+        
+        if sender.tag == TrackerType.habit.rawValue {
+            createHabitViewController.trackerType = .habit
+        } else if sender.tag == TrackerType.event.rawValue {
+            createHabitViewController.trackerType = .event
+        }
+        
+        createHabitViewController.trackerCreated = { [weak self] newTracker in
+            
+            guard let self = self else { return }
+            self.newTracker = newTracker
+            guard let trackerCreated = self.trackerCreated else { return }
+            trackerCreated(newTracker)
+            self.dismiss(animated: false)
+        }
+        self.present(createHabitViewController, animated: true)
     }
 }

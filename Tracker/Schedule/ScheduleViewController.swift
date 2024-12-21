@@ -8,13 +8,13 @@
 import UIKit
 
 enum WeekDay: Int {
-    case monday = 0
-    case tuesday
-    case wednesday
-    case thursday
-    case friday
-    case saturday
-    case sunday
+    case monday = 2
+    case tuesday = 3
+    case wednesday = 4
+    case thursday = 5
+    case friday = 6
+    case saturday = 7
+    case sunday = 1
 }
 
 class ScheduleViewController: UIViewController {
@@ -101,7 +101,8 @@ extension ScheduleViewController: UITableViewDataSource {
         cell.textLabel?.textColor = UIColor(named: "YPBlack")
         cell.textLabel?.text = dayOfWeekNames[indexPath.row]
         cell.dayOfWeekValueChanged = { [weak self] isOn in
-            guard let dayOfWeek = WeekDay(rawValue: indexPath.row) else { return }
+            let dayOfWeekInt = (indexPath.row < 6) ? indexPath.row + 2 : 1
+            guard let dayOfWeek = WeekDay(rawValue: dayOfWeekInt) else { return }
             if isOn {
                 self?.dayOfWeekSelected.insert(dayOfWeek)
             } else {

@@ -15,13 +15,10 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     let statusButton = UIButton()
     let mainView = UIView()
     let daysCountLabel = UILabel()
-    var isDone = false
-    var trackerStatusChanged: ((Bool) -> Void)?
+    var trackerStatusChanged: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.layer.borderColor = UIColor.black.cgColor
-        contentView.layer.borderWidth = 1
         addMainView()
         addEmoji()
         addTrackerLabel()
@@ -29,11 +26,15 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         addDaysCountLabel()
     }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private func addDaysCountLabel() {
         daysCountLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(daysCountLabel)
         daysCountLabel.text = "0 дней"
-        daysCountLabel.font = UIFont(name: "SF Pro Regualr", size: 12)
+        daysCountLabel.font = UIFont(name: "SF Pro Medium", size: 12)
         daysCountLabel.numberOfLines = 0
         daysCountLabel.centerYAnchor.constraint(equalTo: statusButton.centerYAnchor).isActive = true
         daysCountLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12).isActive = true
@@ -44,7 +45,6 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         statusButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(statusButton)
         statusButton.layer.cornerRadius = 17
-        changeStatus(isDone: isDone)
         statusButton.tintColor = UIColor(named: "YPWhite")
         statusButton.heightAnchor.constraint(equalToConstant: 34).isActive = true
         statusButton.widthAnchor.constraint(equalToConstant: 34).isActive = true
@@ -56,10 +56,8 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     @objc private func statusButtonTapped() {
         
-        changeStatus(isDone: !isDone)
-        isDone = !isDone
         guard let trackerStatusChanged = trackerStatusChanged else { return }
-        trackerStatusChanged(isDone)
+        trackerStatusChanged()
     }
     
     private func changeStatus(isDone: Bool) {
@@ -120,18 +118,26 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         trackerNameLabel.font = UIFont(name: "SF Pro Medium", size: 12)
         trackerNameLabel.textColor = UIColor(named: "TextColor")
         trackerNameLabel.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 12).isActive = true
-        trackerNameLabel.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: 12).isActive = true
+        trackerNameLabel.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -12).isActive = true
         trackerNameLabel.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 8).isActive = true
     }
     
-    func configureCell(tracker: Tracker) {
+    func configureCell(tracker: Tracker, status: Bool, daysCount: Int) {
         mainView.backgroundColor = tracker.color
         statusButton.backgroundColor = tracker.color
         trackerNameLabel.text = tracker.name
         emojiLabel.text = tracker.emoji
+        daysCountLabel.text = "\(daysCount) \(formattedDays(daysCount: daysCount))"
+        changeStatus(isDone: status)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    private func formattedDays(daysCount: Int) -> String {
+        if daysCount % 10 == 1 && daysCount != 11 {
+            return "день"
+        } else if daysCount % 10 > 1 && daysCount % 10 < 5 && daysCount != 12 && daysCount != 13 && daysCount != 14 {
+            return "дня"
+        } else {
+            return "дней"
+        }
     }
 }
