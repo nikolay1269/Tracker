@@ -12,8 +12,6 @@ final class TrackersViewController: UIViewController {
     private var plusButton: UIButton?
     private var dateTimeLabel: UILabel?
     private var trackersLabel: UILabel?
-    private var searchBar: UISearchBar?
-    private var searchController: UISearchController?
     private var collectionView: UICollectionView?
     private var emptyView: UIView?
     private var searchTextField: UISearchTextField?
@@ -37,10 +35,9 @@ final class TrackersViewController: UIViewController {
         addCollectionView()
         addEmptyView()
         addDateTimePicker()
-        emptyView?.isHidden = true
-        collectionView?.reloadData()
         generateTestData()
         filterCategoriesByDateAndSearchText()
+        collectionView?.reloadData()
     }
     
     private func generateTestData() {
@@ -53,15 +50,15 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func plusButtonTapped() {
-        let createTrackerViewController = SelectTrackerTypeViewController()
-        createTrackerViewController.trackerCreated = { [weak self] newTracker in
+        let selectTrackerTypeViewController = SelectTrackerTypeViewController()
+        selectTrackerTypeViewController.trackerCreated = { [weak self] newTracker in
             
             guard let self = self else { return }
             self.addNewTracker(tracker: newTracker)
             self.filterCategoriesByDateAndSearchText()
             self.collectionView?.reloadData()
         }
-        self.present(createTrackerViewController, animated: true)
+        self.present(selectTrackerTypeViewController, animated: true)
     }
     
     private func addNewTracker(tracker: Tracker) {
@@ -80,21 +77,21 @@ final class TrackersViewController: UIViewController {
         datePicker.preferredDatePickerStyle = .compact
         datePicker.locale = Locale(identifier: "ru_Ru")
         datePicker.calendar.firstWeekday = 2
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
+        datePicker.overrideUserInterfaceStyle = .light
+        let datePickerBarButtonItem = UIBarButtonItem(customView: datePicker)
+        navigationItem.rightBarButtonItem = datePickerBarButtonItem
         let currentDate = Date()
         let calendar = Calendar.current
         let minDate = calendar.date(byAdding: .year, value: -10, to: currentDate)
-        let maxDate = calendar.date(byAdding: .year, value: 10, to: currentDate)
+        let maxDate = currentDate
         datePicker.minimumDate = minDate
         datePicker.maximumDate = maxDate
         datePicker.addTarget(self, action: #selector(datePickerValueChange(_:)), for: .valueChanged)
+        datePicker.widthAnchor.constraint(equalToConstant: 100).isActive = true
     }
     
     @objc func datePickerValueChange(_ sender: UIDatePicker) {
-        let selectedDate = sender.date
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd.MM.yyyy"
-        currentDate = selectedDate
+        currentDate = sender.date
         filterCategoriesByDateAndSearchText()
         collectionView?.reloadData()
     }
@@ -111,7 +108,6 @@ final class TrackersViewController: UIViewController {
     }
     
     private func addSearchTextField() {
-    
         let searchTextField = UISearchTextField()
         searchTextField.backgroundColor = UIColor(named: "SearchColor")
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -160,9 +156,7 @@ final class TrackersViewController: UIViewController {
     
     private func addEmptyView() {
         
-        guard let collectionView = collectionView else {
-            return
-        }
+        guard let collectionView = collectionView else { return }
         
         let emptyView = UIView()
         emptyView.translatesAutoresizingMaskIntoConstraints = false

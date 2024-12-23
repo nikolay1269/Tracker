@@ -98,6 +98,7 @@ class CreateTrackerViewController: UIViewController {
         paddingView.backgroundColor = .clear
         nameTextField.leftView = paddingView
         nameTextField.leftViewMode = .always
+        nameTextField.clearButtonMode = .whileEditing
         nameTextField.addTarget(self, action: #selector(nameTextFieldEditingChanged), for: .editingChanged)
     }
     
@@ -186,7 +187,16 @@ class CreateTrackerViewController: UIViewController {
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
         tableView.topAnchor.constraint(equalTo: nameStackView.bottomAnchor, constant: 24).isActive = true
-        tableView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        var tableHeight: CGFloat = 0
+        switch (trackerType) {
+        case .habit:
+            tableHeight = 150
+        case .event:
+            tableHeight = 75
+        case .none:
+            tableHeight = 0
+        }
+        tableView.heightAnchor.constraint(equalToConstant: tableHeight).isActive = true
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = 75
@@ -221,6 +231,10 @@ extension CreateTrackerViewController: UITableViewDataSource {
         cell.detailTextLabel?.textColor = UIColor(named: "YPGray")
         cell.backgroundColor = UIColor(named: "TextFieldBackgroundColor")
         cell.accessoryType = .disclosureIndicator
+        let lastIndex = trackerType == .habit ? 1 : 0
+        if indexPath.row == lastIndex {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: tableView.bounds.size.width)
+        }
         switch (indexPath.row) {
         case TrackerParams.category.rawValue:
             cell.textLabel?.text = "Категория"

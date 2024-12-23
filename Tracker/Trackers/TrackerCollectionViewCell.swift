@@ -116,7 +116,6 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         trackerNameLabel.textColor = UIColor(named: "YPWhite")
         mainView.addSubview(trackerNameLabel)
         trackerNameLabel.font = UIFont(name: "SF Pro Medium", size: 12)
-        trackerNameLabel.textColor = UIColor(named: "TextColor")
         trackerNameLabel.leadingAnchor.constraint(equalTo: mainView.leadingAnchor, constant: 12).isActive = true
         trackerNameLabel.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -12).isActive = true
         trackerNameLabel.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 8).isActive = true

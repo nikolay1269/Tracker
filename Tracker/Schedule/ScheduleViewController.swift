@@ -100,6 +100,9 @@ extension ScheduleViewController: UITableViewDataSource {
         cell.textLabel?.font = UIFont(name: "SF Pro Regular", size: 17)
         cell.textLabel?.textColor = UIColor(named: "YPBlack")
         cell.textLabel?.text = dayOfWeekNames[indexPath.row]
+        if indexPath.row == dayOfWeekNames.count - 1 {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: tableView.bounds.size.width)
+        }
         cell.dayOfWeekValueChanged = { [weak self] isOn in
             let dayOfWeekInt = (indexPath.row < 6) ? indexPath.row + 2 : 1
             guard let dayOfWeek = WeekDay(rawValue: dayOfWeekInt) else { return }
