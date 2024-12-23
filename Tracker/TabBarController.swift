@@ -12,7 +12,12 @@ final class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
+        let appearance = UITabBarAppearance()
+        appearance.backgroundColor = UIColor(named: "YPWhite")
+        tabBar.standardAppearance = appearance
+        if #available(iOS 15.0, *) {
+            tabBar.scrollEdgeAppearance = appearance
+        }
         let trackersViewController = TrackersViewController()
         let navigationViewController = UINavigationController(rootViewController: trackersViewController)
         navigationViewController.navigationBar.barStyle = .black

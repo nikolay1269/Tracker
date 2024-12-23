@@ -30,7 +30,7 @@ class SelectTrackerTypeViewController: UIViewController {
         titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         titleLabel.text = "Создание трекера"
         titleLabel.font = UIFont(name: "SF Pro Medium", size: 16)
-        titleLabel.textAlignment = .center
+        titleLabel.textAlignment = .center 
     }
     
     private func addHabitButton() {
@@ -46,6 +46,7 @@ class SelectTrackerTypeViewController: UIViewController {
         habitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         habitButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -38).isActive = true
         habitButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        habitButton.layer.cornerRadius = 16
         habitButton.addTarget(self, action: #selector(trackerTypeButtonTapped(sender:)), for: .touchUpInside)
     }
     
@@ -62,6 +63,7 @@ class SelectTrackerTypeViewController: UIViewController {
         eventButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         eventButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 38).isActive = true
         eventButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        eventButton.layer.cornerRadius = 16
         eventButton.addTarget(self, action: #selector(trackerTypeButtonTapped(sender:)), for: .touchUpInside)
     }
     
