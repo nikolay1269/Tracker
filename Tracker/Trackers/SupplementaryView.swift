@@ -17,9 +17,9 @@ class SupplementaryView: UICollectionReusableView {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = UIFont(name: "SF Pro Bold", size: 19)
         titleLabel.textAlignment = .left
-        titleLabel.textColor = UIColor(named: "TextColor")
+        titleLabel.textColor = UIColor(named: "YPBlack")
         NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
             titleLabel.topAnchor.constraint(equalTo: topAnchor),
             titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
