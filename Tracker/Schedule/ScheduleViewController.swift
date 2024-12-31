@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum WeekDay: Int {
+enum WeekDay: Int, Codable {
     case monday = 2
     case tuesday = 3
     case wednesday = 4
