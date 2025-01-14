@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum WeekDay: Int, Codable {
+enum WeekDay: Int, Codable, CaseIterable {
     case monday = 2
     case tuesday = 3
     case wednesday = 4
@@ -15,6 +15,10 @@ enum WeekDay: Int, Codable {
     case friday = 6
     case saturday = 7
     case sunday = 1
+    
+    var value: Int16 {
+        return Int16(1 << self.rawValue)
+    }
 }
 
 class ScheduleViewController: UIViewController {

@@ -460,6 +460,7 @@ extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout {
         case .none:
             break
         }
+        setCreateButtonEnabled()
     }
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
