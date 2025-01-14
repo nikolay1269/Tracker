@@ -26,28 +26,39 @@ protocol TrackerCategoryStoreProtocol {
     func numberOfItems() -> Int
 }
 
+protocol TrackerCategoryStoreDelegate: AnyObject {
+    func didUpdate()
+}
+
 final class TrackerCategoryStore: NSObject {
     
+    // MARK: - Public Properties
     var currentDate: Date
     var searchText: String?
     
+    // MARK: - Private Properties
     private var context: NSManagedObjectContext
-    
-    init(context: NSManagedObjectContext, date: Date) {
-        self.context = context
-        self.currentDate = date
-    }
+    private weak var delegate: TrackerCategoryStoreDelegate?
     
     private lazy var fetchedResultController: NSFetchedResultsController<TrackerCategoryCoreData> = {
        
         let fetchRequest = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(TrackerCategoryCoreData.name), ascending: true)]
         let fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+        fetchResultController.delegate = self
         try? fetchResultController.performFetch()
         return fetchResultController
     }()
+    
+    // MARK: - Initializers
+    init(context: NSManagedObjectContext, date: Date, delegate: TrackerCategoryStoreDelegate) {
+        self.context = context
+        self.currentDate = date
+        self.delegate = delegate
+    }
 }
 
+// MARK: - TrackerCategoryStoreProtocol
 extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
     
     func setSearchText(text: String) {
@@ -64,12 +75,15 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         return result
     }
     
-    
     func setCurrentDate(date: Date) {
         self.currentDate = date
     }
 
     func titleForSection(_ section: Int) -> String {
+        guard fetchedResultController.fetchedObjects?.count ?? 0 > 0 else {
+            return ""
+        }
+        
         if let trackerCategoryCoreData = fetchedResultController.fetchedObjects?[section] {
             let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
             if filteredTrackers.count > 0 {
@@ -185,5 +199,14 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
             print(error)
             context.rollback()
         }
+    }
+}
+
+// MARK: - NSFetchedResultsControllerDelegate
+extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        
+        delegate?.didUpdate()
     }
 }

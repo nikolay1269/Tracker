@@ -29,7 +29,7 @@ final class TrackersViewController: UIViewController {
     }()
     private lazy var trackerCategoryStore: TrackerCategoryStoreProtocol? = {
         let context = (UIApplication.shared.delegate as! AppDelegate).context
-        let trackerCategoryStore = TrackerCategoryStore(context: context, date: Date())
+        let trackerCategoryStore = TrackerCategoryStore(context: context, date: Date(), delegate: self)
         return trackerCategoryStore
     }()
     private lazy var trackerRecordStore: TrackerRecordStoreProtocol? = {
@@ -49,9 +49,9 @@ final class TrackersViewController: UIViewController {
         addEmptyView()
         addDateTimePicker()
         generateTestData()
-        collectionView?.reloadData()
         let show = trackerCategoryStore?.numberOfItems() == 0
         changeEmptyStateForCollectionView(show: show)
+        collectionView?.reloadData()
     }
     
     // MARK: - IB Actions
@@ -291,5 +291,14 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         
         return 9
+    }
+}
+
+extension TrackersViewController: TrackerCategoryStoreDelegate {
+    
+    func didUpdate() {
+        collectionView?.reloadData()
+        let show = trackerCategoryStore?.numberOfItems() == 0
+        changeEmptyStateForCollectionView(show: show)
     }
 }
