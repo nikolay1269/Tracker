@@ -18,20 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "Tracker")
-        container.loadPersistentStores { (storeDescription, error) in
-            if let error = error as NSError? {
-                print(error)
-            }
-        }
-        return container
-    }()
-    
-    lazy var context: NSManagedObjectContext = {
-        return persistentContainer.viewContext
-    }()
-    
     // MARK: UISceneSession Lifecycle
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {

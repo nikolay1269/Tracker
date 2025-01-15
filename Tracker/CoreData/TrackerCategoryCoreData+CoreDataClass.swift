@@ -10,6 +10,4 @@ import Foundation
 import CoreData
 
 @objc(TrackerCategoryCoreData)
-public class TrackerCategoryCoreData: NSManagedObject {
-
-}
+public class TrackerCategoryCoreData: NSManagedObject {}

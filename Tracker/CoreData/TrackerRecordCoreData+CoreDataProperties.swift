@@ -22,6 +22,4 @@ extension TrackerRecordCoreData {
 
 }
 
-extension TrackerRecordCoreData : Identifiable {
-
-}
+extension TrackerRecordCoreData : Identifiable {}

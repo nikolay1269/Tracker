@@ -18,7 +18,6 @@ extension TrackerCategoryCoreData {
 
     @NSManaged public var categoryId: UUID?
     @NSManaged public var name: String?
-    //@NSManaged public var trackerId: UUID?
     @NSManaged public var trackers: NSSet?
 
 }
@@ -40,6 +39,4 @@ extension TrackerCategoryCoreData {
 
 }
 
-extension TrackerCategoryCoreData : Identifiable {
-
-}
+extension TrackerCategoryCoreData : Identifiable {}

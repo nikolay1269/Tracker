@@ -31,12 +31,7 @@ extension TrackerRecordStore: TrackerRecordStoreProtocol {
         trackerRecordCoreData.id = UUID()
         trackerRecordCoreData.date = date
         trackerRecordCoreData.trackers = getTrackerCoreDataById(tracker.id)
-        do {
-            try context.save()
-        } catch let error {
-            print(error)
-            context.rollback()
-        }
+        CoreDataManager.shared.saveContext()
     }
     
     func removeRecordForTracker(_ tracker: Tracker, date: Date) {
@@ -44,11 +39,7 @@ extension TrackerRecordStore: TrackerRecordStoreProtocol {
         for result in results {
             if result.date?.scheduleComparison(date: date) == .orderedSame {
                 context.delete(result)
-                do {
-                    try context.save()
-                } catch {
-                    print(error)
-                }
+                CoreDataManager.shared.saveContext()
                 break
             }
         }
@@ -83,8 +74,12 @@ extension TrackerRecordStore: TrackerRecordStoreProtocol {
     }
     
     private func trackerRecordsForTracker(_ tracker: Tracker) -> [TrackerRecordCoreData] {
+        guard let trackerIdFieldName = (\TrackerRecordCoreData.trackers?.id)._kvcKeyPathString else {
+            return []
+        }
+        
         let fetchRequest = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
-        let predicate = NSPredicate(format: "%K == %@", (\TrackerRecordCoreData.trackers?.id)._kvcKeyPathString!, tracker.id as NSUUID)
+        let predicate = NSPredicate(format: "%K == %@", trackerIdFieldName, tracker.id as NSUUID)
         fetchRequest.predicate = predicate
         if let results = try? context.fetch(fetchRequest) {
             return results

@@ -42,12 +42,7 @@ extension TrackerStore: TrackerStoreProtocol {
         let trackerCategoryCoreData = findCategoryById(categoryId)
         trackerCoreData.category = trackerCategoryCoreData
         trackerCategoryCoreData?.addToTrackers(trackerCoreData)
-        do {
-            try context.save()
-        } catch let error {
-            print(error)
-            context.rollback()
-        }
+        CoreDataManager.shared.saveContext()
     }
     
     private func findCategoryById(_ categoryId: UUID) -> TrackerCategoryCoreData? {

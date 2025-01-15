@@ -23,17 +23,17 @@ final class TrackersViewController: UIViewController {
     private let headerIdentifier = "headerIdentifier"
     private var currentDate: Date = Date()
     private lazy var trackerStore: TrackerStoreProtocol? = {
-        let context = (UIApplication.shared.delegate as! AppDelegate).context
+        let context = CoreDataManager.shared.context
         let trackerStore = TrackerStore(context: context)
         return trackerStore
     }()
     private lazy var trackerCategoryStore: TrackerCategoryStoreProtocol? = {
-        let context = (UIApplication.shared.delegate as! AppDelegate).context
+        let context = CoreDataManager.shared.context
         let trackerCategoryStore = TrackerCategoryStore(context: context, date: Date(), delegate: self)
         return trackerCategoryStore
     }()
     private lazy var trackerRecordStore: TrackerRecordStoreProtocol? = {
-        let context = (UIApplication.shared.delegate as! AppDelegate).context
+        let context = CoreDataManager.shared.context
         let trackerRecordStore = TrackerRecordStore(context: context)
         return trackerRecordStore
     }()

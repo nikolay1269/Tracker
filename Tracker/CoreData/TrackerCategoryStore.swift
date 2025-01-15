@@ -66,8 +66,11 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
     }
     
     func numberOfItems() -> Int {
+        guard let fetchObjects = fetchedResultController.fetchedObjects else {
+            return 0
+        }
         var result = 0
-        for fetchObject in fetchedResultController.fetchedObjects! {
+        for fetchObject in fetchObjects {
             let trackers = filteredTrackersForCategory(fetchObject)
             let numberOfTrackersForCategory = trackers.count
             result = result + numberOfTrackersForCategory
@@ -193,12 +196,7 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         let trackerCategoryCoreData = TrackerCategoryCoreData(context: context)
         trackerCategoryCoreData.categoryId = record.id
         trackerCategoryCoreData.name = record.name
-        do {
-            try context.save()
-        } catch let error {
-            print(error)
-            context.rollback()
-        }
+        CoreDataManager.shared.saveContext()
     }
 }
 
