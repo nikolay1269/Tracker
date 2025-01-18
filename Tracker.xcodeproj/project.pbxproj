@@ -116,14 +116,12 @@
 		F319520D2CF5AA0C009F3D77 /* Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				F3D3D8F02D3BB90E007BCD1A /* Model */,
+				F3D3D8F12D3BB959007BCD1A /* View */,
+				F3D3D8F22D3BB999007BCD1A /* ViewModel */,
 				F3A4443C2D3A3BE8005F4C03 /* Onboarding */,
 				F341E2B82D1D28A200472D44 /* CoreData */,
-				F38ACA9C2CFB3D4A009A9753 /* Statistics */,
 				F375D9EC2CF8A08E00D19B7F /* Extensions */,
-				F375D9E62CF87C8800D19B7F /* Trackers */,
-				F39FFE862D10550000503140 /* Tracker */,
-				F3D2CC672D11A3DD00A65920 /* Schedule */,
-				F3DC95C72CF5F32300FF7CCE /* Splash */,
 				F319520E2CF5AA0C009F3D77 /* AppDelegate.swift */,
 				F31952102CF5AA0C009F3D77 /* SceneDelegate.swift */,
 				F38ACA982CFB3CC3009A9753 /* TabBarController.swift */,
@@ -158,9 +156,6 @@
 			isa = PBXGroup;
 			children = (
 				F375D9E72CF87CBD00D19B7F /* TrackersViewController.swift */,
-				F3DF94FF2D0069F10060DD1E /* Tracker.swift */,
-				F3DF95012D006B0F0060DD1E /* TrackerCategory.swift */,
-				F3DF95032D006B5B0060DD1E /* TrackerRecord.swift */,
 				F37FA9502D06CC19004EEC83 /* TrackerCollectionViewCell.swift */,
 				F36A489D2D0976C4008DBDD6 /* SupplementaryView.swift */,
 			);
@@ -211,6 +206,51 @@
 				F342C7072D13148D00F2149C /* ScheduleTableViewCell.swift */,
 			);
 			path = Schedule;
+			sourceTree = "<group>";
+		};
+		F3D3D8EF2D3BB6C2007BCD1A /* Category */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
+		F3D3D8F02D3BB90E007BCD1A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F3DF94FF2D0069F10060DD1E /* Tracker.swift */,
+				F3DF95012D006B0F0060DD1E /* TrackerCategory.swift */,
+				F3DF95032D006B5B0060DD1E /* TrackerRecord.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F3D3D8F12D3BB959007BCD1A /* View */ = {
+			isa = PBXGroup;
+			children = (
+				F3D3D8EF2D3BB6C2007BCD1A /* Category */,
+				F38ACA9C2CFB3D4A009A9753 /* Statistics */,
+				F375D9E62CF87C8800D19B7F /* Trackers */,
+				F39FFE862D10550000503140 /* Tracker */,
+				F3D2CC672D11A3DD00A65920 /* Schedule */,
+				F3DC95C72CF5F32300FF7CCE /* Splash */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		F3D3D8F22D3BB999007BCD1A /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				F3D3D8F32D3BB9CE007BCD1A /* Category */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		F3D3D8F32D3BB9CE007BCD1A /* Category */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Category;
 			sourceTree = "<group>";
 		};
 		F3DC95C72CF5F32300FF7CCE /* Splash */ = {
