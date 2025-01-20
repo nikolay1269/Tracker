@@ -37,9 +37,9 @@ class CreateTrackerViewController: UIViewController {
     
     // MARK: - Public Properties
     var dayOfWeekSelected: Set<WeekDay> = Set<WeekDay>()
-    var trackerCreated: ((Tracker) -> Void)?
+    var trackerCreated: ((Tracker, TrackerCategory) -> Void)?
     var trackerType: TrackerType?
-    var selectedCategory: TrackerCategory?
+    var selectedTrackerCategory: TrackerCategory?
     
     // MARK: - Private Properties
     private let nameMaxLength = 38
@@ -174,7 +174,7 @@ class CreateTrackerViewController: UIViewController {
     private func allRequiredFieldsNotEmpty() -> Bool {
         guard let count = nameTextField.text?.count, count > 0 && count <= nameMaxLength &&
                 (dayOfWeekSelected.count > 0 || trackerType == .event)
-                && (currentColor != nil && currentEmoji != nil) && selectedCategory != nil else { return false }
+                && (currentColor != nil && currentEmoji != nil) && selectedTrackerCategory != nil else { return false }
         return true
     }
     
@@ -257,9 +257,9 @@ class CreateTrackerViewController: UIViewController {
     }
     
     @objc private func createButtonTapped() {
-        guard let trackerCreated = trackerCreated else { return }
-        self.dismiss(animated: true)
-        trackerCreated(createTracker())
+        guard let trackerCreated = trackerCreated, let selectedTrackerCategory = selectedTrackerCategory else { return }
+        dismiss(animated: true)
+        trackerCreated(createTracker(), selectedTrackerCategory)
     }
     
     @objc private func cancelButtonTapped() {
@@ -298,7 +298,7 @@ extension CreateTrackerViewController: UITableViewDataSource {
         switch (indexPath.row) {
         case TrackerParamsTableView.category.rawValue:
             cell.textLabel?.text = "Категория"
-            cell.detailTextLabel?.text = selectedCategory?.name
+            cell.detailTextLabel?.text = selectedTrackerCategory?.name
         case TrackerParamsTableView.schedule.rawValue:
             cell.textLabel?.text = "Расписание"
         default:
@@ -315,13 +315,12 @@ extension CreateTrackerViewController: UITableViewDelegate {
         
         switch(indexPath.row) {
         case TrackerParamsTableView.category.rawValue:
-            print("Select default category")
             let trackerCategoriesViewController = TrackerCategoriesViewController()
             trackerCategoriesViewController.onTrackerCategorySelected = { [weak self] trackerCategory in
                 guard let self = self else { return }
-                self.selectedCategory = trackerCategory
+                self.selectedTrackerCategory = trackerCategory
                 let cell = tableView.cellForRow(at: indexPath)
-                cell?.detailTextLabel?.text = self.selectedCategory?.name
+                cell?.detailTextLabel?.text = self.selectedTrackerCategory?.name
                 self.setCreateButtonEnabled()
             }
             self.present(trackerCategoriesViewController, animated: true)

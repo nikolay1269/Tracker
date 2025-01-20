@@ -22,7 +22,6 @@ protocol TrackerCategoryStoreProtocol {
     func titleForSection(_ section: Int) -> String
     func addRecord(_ record: TrackerCategory) throws
     func filteredTracker(at: IndexPath) throws -> Tracker?
-    func getDefaultCategory() -> TrackerCategory?
     func setCurrentDate(date: Date)
     func setSearchText(text: String)
     func numberOfItems() -> Int
@@ -53,7 +52,7 @@ final class TrackerCategoryStore: NSObject {
     }()
     
     // MARK: - Initializers
-    init(context: NSManagedObjectContext, date: Date, delegate: TrackerCategoryStoreDelegate) {
+    init(context: NSManagedObjectContext, date: Date, delegate: TrackerCategoryStoreDelegate? = nil) {
         self.context = context
         self.currentDate = date
         self.delegate = delegate
@@ -97,40 +96,18 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
     }
 
     func titleForSection(_ section: Int) -> String {
-        guard fetchedResultController.fetchedObjects?.count ?? 0 > 0 else {
-            return ""
-        }
-        
-        if let trackerCategoryCoreData = fetchedResultController.fetchedObjects?[section] {
-            let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
-            if filteredTrackers.count > 0 {
-                return trackerCategoryCoreData.name ?? ""
-            } else {
-                return ""
-            }
-        } else {
-            return ""
-        }
-    }
-    
-    func getDefaultCategory() -> TrackerCategory? {
-        if let trackerCategoryCoreData = fetchedResultController.fetchedObjects?.first {
-            let trackerCategory = try? trackerCategoryFromCoreDataObject(trackerCategoryCoreData)
-            return trackerCategory
-        }
-        return nil
+        let filteredTrackerCategories = filteredTrackerCategories()
+        return filteredTrackerCategories[section].name ?? ""
     }
     
     var numberOfSections: Int {
-        fetchedResultController.sections?.count ?? 0
+
+        return filteredTrackerCategories().count
     }
     
     func numbersOfFilteredTrackersInSection(_ section: Int) -> Int {
-        guard let objectsCount = fetchedResultController.fetchedObjects?.count,
-              objectsCount > 0,
-              let trackerCategoryCoreData: TrackerCategoryCoreData = fetchedResultController.fetchedObjects?[section] else {
-            return 0
-        }
+        let filteredTrackerCategies = filteredTrackerCategories()
+        let trackerCategoryCoreData = filteredTrackerCategies[section]
         let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
         return filteredTrackers.count
     }
@@ -156,14 +133,29 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         return result
     }
     
+    private func filteredTrackerCategories() -> [TrackerCategoryCoreData] {
+        
+        var result: [TrackerCategoryCoreData] = []
+        guard let fethedObjects = fetchedResultController.fetchedObjects else {
+            return []
+        }
+        
+        for trackerCategoryCoreData in fethedObjects {
+            let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
+            if filteredTrackers.count > 0 {
+                result.append(trackerCategoryCoreData)
+            }
+        }
+        return result
+    }
+    
     private func isTrackerForWeekDay(_ weekDay: WeekDay, weekDayInt: Int16) -> Bool {
         return weekDayInt & weekDay.value > 0
     }
     
     func filteredTracker(at: IndexPath) throws -> Tracker? {
-        guard let trackerCategoryCoreData: TrackerCategoryCoreData = fetchedResultController.fetchedObjects?[at.section] else {
-            fatalError()
-        }
+        let filteredTrackerCategories = filteredTrackerCategories()
+        let trackerCategoryCoreData = filteredTrackerCategories[at.section]
         let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
         if filteredTrackers.count == 0 {
             return nil

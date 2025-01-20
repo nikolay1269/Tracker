@@ -20,6 +20,7 @@ class TrackerCategoriesViewController: UIViewController {
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tableView.separatorColor = UIColor(named: "YPGray")
         tableView.layer.cornerRadius = 16
+        tableView.rowHeight = 75
         return tableView
     }()
     
@@ -31,7 +32,7 @@ class TrackerCategoriesViewController: UIViewController {
         return label
     }()
     
-    private lazy var doneButton: UIButton = {
+    private lazy var addCategoryButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(named: "YPBlack")
         button.layer.cornerRadius = 16
@@ -41,7 +42,7 @@ class TrackerCategoriesViewController: UIViewController {
                                                           NSAttributedString.Key.foregroundColor : UIColor.white]
         let attributedTitle = NSAttributedString(string: "Добавить категорию", attributes: attributes)
         button.setAttributedTitle(attributedTitle, for: .normal)
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(addCategoryButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -66,19 +67,13 @@ class TrackerCategoriesViewController: UIViewController {
         setupLayout()
         let categoryCount = trackerCategoryStore?.numberOfCategories() ?? 0
         changeEmptyViewVisibility(categoryCount == 0)
-        if categoryCount > 0 && selectedTrackerCategory == nil {
-            changeDoneButtonEnable(false)
-        }
     }
     
     // MARK: - IB Actions
-    @objc private func buttonTapped() {
-        if selectedTrackerCategory != nil {
-            onTrackerCategorySelected?(selectedTrackerCategory)
-            dismiss(animated: true)
-        } else if trackerCategoryStore?.numberOfCategories() == 0 {
-            //TODO: Open create category screen
-        }
+    @objc private func addCategoryButtonTapped() {
+
+        let createTrackerCategoryViewController = CreateTrackerCategoryViewController()
+        self.present(createTrackerCategoryViewController, animated: true)
     }
     
     // MARK: - Private Methods
@@ -87,7 +82,7 @@ class TrackerCategoriesViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(trackerCategoriesTableView)
         view.addSubview(trackerCategoriesLabel)
-        view.addSubview(doneButton)
+        view.addSubview(addCategoryButton)
         emptyView = EmptyView(rootView: view, parentView: trackerCategoriesTableView, text: "Привычки и события можно объединить по смыслу")
         NSLayoutConstraint.activate([
             trackerCategoriesTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -98,25 +93,15 @@ class TrackerCategoriesViewController: UIViewController {
             trackerCategoriesLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 28),
             trackerCategoriesLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            doneButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
-            doneButton.heightAnchor.constraint(equalToConstant: 60)
+            addCategoryButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            addCategoryButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            addCategoryButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
+            addCategoryButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
     private func changeEmptyViewVisibility(_ visible: Bool) {
         emptyView?.isHidden = !visible
-    }
-    
-    private func changeDoneButtonEnable(_ enable: Bool) {
-        doneButton.isEnabled = enable
-        switch(enable) {
-        case true:
-            doneButton.backgroundColor = UIColor(named: "YPBlack")
-        case false:
-            doneButton.backgroundColor = UIColor(named: "YPGray")
-        }
     }
 }
 
@@ -144,12 +129,13 @@ extension TrackerCategoriesViewController: UITableViewDataSource {
         
         let category = trackerCategoryStore?.category(at: indexPath)
         cell.textLabel?.text = category?.name
-        //cell.label.text = category?.name
         cell.accessoryType = .none
         cell.backgroundColor = UIColor(named: "TextFieldBackgroundColor")
         cell.selectionStyle = .none
         if indexPath.row == (trackerCategoryStore?.numberOfCategories() ?? 0) - 1 {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: tableView.bounds.size.width)
+        } else {
+            cell.separatorInset = UIEdgeInsets.zero
         }
         return cell
     }
@@ -165,11 +151,22 @@ extension TrackerCategoriesViewController: UITableViewDelegate {
             previousSelectedCell?.accessoryType = .none
         }
         selectedTrackerCategory = trackerCategoryStore?.category(at: indexPath)
-        if selectedTrackerCategory != nil {
-            changeDoneButtonEnable(true)
-        }
         let selectedCell = tableView.cellForRow(at: indexPath)
         selectedCell?.accessoryType = .checkmark
         selectedIndexPath = indexPath
+        onTrackerCategorySelected?(selectedTrackerCategory)
+        dismiss(animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        var corners: UIRectCorner = []
+        if indexPath.row == (trackerCategoryStore?.numberOfCategories() ?? 0) - 1 {
+            corners.update(with: .bottomLeft)
+            corners.update(with: .bottomRight)
+        }
+        let maskLayer = CAShapeLayer()
+        maskLayer.path = UIBezierPath(roundedRect: cell.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: 16, height: 16)).cgPath
+        cell.layer.mask = maskLayer
     }
 }
