@@ -16,10 +16,12 @@ enum TrackerCategoryStoreError: Error {
 
 protocol TrackerCategoryStoreProtocol {
     var numberOfSections: Int { get }
-    func numbersOfObjectsInSection(_ section: Int) -> Int
+    func numberOfCategories() -> Int
+    func category(at: IndexPath) -> TrackerCategory?
+    func numbersOfFilteredTrackersInSection(_ section: Int) -> Int
     func titleForSection(_ section: Int) -> String
     func addRecord(_ record: TrackerCategory) throws
-    func object(at: IndexPath) throws -> Tracker?
+    func filteredTracker(at: IndexPath) throws -> Tracker?
     func getDefaultCategory() -> TrackerCategory?
     func setCurrentDate(date: Date)
     func setSearchText(text: String)
@@ -60,6 +62,18 @@ final class TrackerCategoryStore: NSObject {
 
 // MARK: - TrackerCategoryStoreProtocol
 extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
+    
+    func numberOfCategories() -> Int {
+        return fetchedResultController.fetchedObjects?.count ?? 0
+    }
+    
+    func category(at: IndexPath) -> TrackerCategory? {
+        if let categoryCoreData = fetchedResultController.fetchedObjects?[at.row] {
+            return try? trackerCategoryFromCoreDataObject(categoryCoreData)
+        } else {
+            return nil
+        }
+    }
     
     func setSearchText(text: String) {
         self.searchText = text
@@ -111,7 +125,7 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         fetchedResultController.sections?.count ?? 0
     }
     
-    func numbersOfObjectsInSection(_ section: Int) -> Int {
+    func numbersOfFilteredTrackersInSection(_ section: Int) -> Int {
         guard let objectsCount = fetchedResultController.fetchedObjects?.count,
               objectsCount > 0,
               let trackerCategoryCoreData: TrackerCategoryCoreData = fetchedResultController.fetchedObjects?[section] else {
@@ -146,7 +160,7 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         return weekDayInt & weekDay.value > 0
     }
     
-    func object(at: IndexPath) throws -> Tracker? {
+    func filteredTracker(at: IndexPath) throws -> Tracker? {
         guard let trackerCategoryCoreData: TrackerCategoryCoreData = fetchedResultController.fetchedObjects?[at.section] else {
             fatalError()
         }

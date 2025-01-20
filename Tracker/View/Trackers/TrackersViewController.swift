@@ -49,8 +49,8 @@ final class TrackersViewController: UIViewController {
         addEmptyView()
         addDateTimePicker()
         generateTestData()
-        let show = trackerCategoryStore?.numberOfItems() == 0
-        changeEmptyStateForCollectionView(show: show)
+        let visible = trackerCategoryStore?.numberOfItems() == 0
+        changeEmptyViewVisibility(visible)
         collectionView?.reloadData()
     }
     
@@ -70,7 +70,7 @@ final class TrackersViewController: UIViewController {
         currentDate = sender.date
         trackerCategoryStore?.setCurrentDate(date: currentDate)
         let itemsNumber = trackerCategoryStore?.numberOfItems() ?? 0
-        changeEmptyStateForCollectionView(show: itemsNumber == 0)
+        changeEmptyViewVisibility(itemsNumber == 0)
         collectionView?.reloadData()
     }
     
@@ -216,8 +216,8 @@ final class TrackersViewController: UIViewController {
         self.emptyView = emptyView
     }
     
-    private func changeEmptyStateForCollectionView(show: Bool) {
-        emptyView?.isHidden = !show
+    private func changeEmptyViewVisibility(_ visible: Bool) {
+        emptyView?.isHidden = !visible
     }
 }
 
@@ -230,7 +230,7 @@ extension TrackersViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return trackerCategoryStore?.numbersOfObjectsInSection(section) ?? 0
+        return trackerCategoryStore?.numbersOfFilteredTrackersInSection(section) ?? 0
     }
     
     
@@ -239,7 +239,7 @@ extension TrackersViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? TrackerCollectionViewCell else {
             return UICollectionViewCell()
         }
-        guard let tracker = try? trackerCategoryStore?.object(at: indexPath) else {
+        guard let tracker = try? trackerCategoryStore?.filteredTracker(at: indexPath) else {
             return UICollectionViewCell()
         }
         updateCellStatusAndDayCount(cell: cell, tracker: tracker)
@@ -298,7 +298,7 @@ extension TrackersViewController: TrackerCategoryStoreDelegate {
     
     func didUpdate() {
         collectionView?.reloadData()
-        let show = trackerCategoryStore?.numberOfItems() == 0
-        changeEmptyStateForCollectionView(show: show)
+        let visible = trackerCategoryStore?.numberOfItems() == 0
+        changeEmptyViewVisibility(visible)
     }
 }

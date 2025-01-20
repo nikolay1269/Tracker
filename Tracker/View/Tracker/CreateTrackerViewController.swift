@@ -39,6 +39,7 @@ class CreateTrackerViewController: UIViewController {
     var dayOfWeekSelected: Set<WeekDay> = Set<WeekDay>()
     var trackerCreated: ((Tracker) -> Void)?
     var trackerType: TrackerType?
+    var selectedCategory: TrackerCategory?
     
     // MARK: - Private Properties
     private let nameMaxLength = 38
@@ -173,7 +174,7 @@ class CreateTrackerViewController: UIViewController {
     private func allRequiredFieldsNotEmpty() -> Bool {
         guard let count = nameTextField.text?.count, count > 0 && count <= nameMaxLength &&
                 (dayOfWeekSelected.count > 0 || trackerType == .event)
-                && (currentColor != nil && currentEmoji != nil) else { return false }
+                && (currentColor != nil && currentEmoji != nil) && selectedCategory != nil else { return false }
         return true
     }
     
@@ -297,7 +298,7 @@ extension CreateTrackerViewController: UITableViewDataSource {
         switch (indexPath.row) {
         case TrackerParamsTableView.category.rawValue:
             cell.textLabel?.text = "Категория"
-            cell.detailTextLabel?.text = "Важное"
+            cell.detailTextLabel?.text = selectedCategory?.name
         case TrackerParamsTableView.schedule.rawValue:
             cell.textLabel?.text = "Расписание"
         default:
@@ -315,6 +316,15 @@ extension CreateTrackerViewController: UITableViewDelegate {
         switch(indexPath.row) {
         case TrackerParamsTableView.category.rawValue:
             print("Select default category")
+            let trackerCategoriesViewController = TrackerCategoriesViewController()
+            trackerCategoriesViewController.onTrackerCategorySelected = { [weak self] trackerCategory in
+                guard let self = self else { return }
+                self.selectedCategory = trackerCategory
+                let cell = tableView.cellForRow(at: indexPath)
+                cell?.detailTextLabel?.text = self.selectedCategory?.name
+                self.setCreateButtonEnabled()
+            }
+            self.present(trackerCategoriesViewController, animated: true)
         case TrackerParamsTableView.schedule.rawValue:
             let scheduleViewController = ScheduleViewController()
             scheduleViewController.scheduleSelected = { [weak self] dayOfWeekSelected in
