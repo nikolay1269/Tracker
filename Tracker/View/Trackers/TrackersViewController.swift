@@ -18,7 +18,6 @@ final class TrackersViewController: UIViewController {
     private var searchTextField: UISearchTextField?
     
     // MARK: - Private Properties
-    private var categories: [TrackerCategory] = []
     private let cellIdentifier = "trackCellIdentifier"
     private let headerIdentifier = "headerIdentifier"
     private var currentDate: Date = Date()
@@ -48,19 +47,18 @@ final class TrackersViewController: UIViewController {
         addCollectionView()
         addEmptyView()
         addDateTimePicker()
-        generateTestData()
-        let show = trackerCategoryStore?.numberOfItems() == 0
-        changeEmptyStateForCollectionView(show: show)
+        let visible = trackerCategoryStore?.numberOfItems() == 0
+        changeEmptyViewVisibility(visible)
         collectionView?.reloadData()
     }
     
     // MARK: - IB Actions
     @objc private func plusButtonTapped() {
         let selectTrackerTypeViewController = SelectTrackerTypeViewController()
-        selectTrackerTypeViewController.trackerCreated = { [weak self] newTracker in
+        selectTrackerTypeViewController.trackerCreated = { [weak self] newTracker, trackerCategory in
             
             guard let self = self else { return }
-            self.addNewTracker(tracker: newTracker)
+            self.addNewTracker(tracker: newTracker, trackerCategory: trackerCategory)
             self.collectionView?.reloadData()
         }
         self.present(selectTrackerTypeViewController, animated: true)
@@ -70,7 +68,7 @@ final class TrackersViewController: UIViewController {
         currentDate = sender.date
         trackerCategoryStore?.setCurrentDate(date: currentDate)
         let itemsNumber = trackerCategoryStore?.numberOfItems() ?? 0
-        changeEmptyStateForCollectionView(show: itemsNumber == 0)
+        changeEmptyViewVisibility(itemsNumber == 0)
         collectionView?.reloadData()
     }
     
@@ -80,34 +78,17 @@ final class TrackersViewController: UIViewController {
     }
     
     // MARK: - Private Methods
-    private func generateTestData() {
-        
-        guard let trackerCategory = trackerCategoryStore?.getDefaultCategory() else {
-            let trackerCategory = TrackerCategory(id: UUID(), name: "Важное", trackers: [])
-            categories = [trackerCategory]
-            do {
-                try trackerCategoryStore?.addRecord(trackerCategory)
-            } catch {
-                print(error)
-            }
-            return
-        }
-        categories = [trackerCategory]
-    }
-    
     private func addLeftNavigationBarItem() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped))
         navigationItem.leftBarButtonItem?.tintColor = .black
     }
     
-    private func addNewTracker(tracker: Tracker) {
+    private func addNewTracker(tracker: Tracker, trackerCategory: TrackerCategory) {
 
-        let oldCategory = categories.first
-        var newTrackers = oldCategory?.trackers
-        newTrackers?.append(tracker)
-        guard let newTrackers = newTrackers, let oldCategory = oldCategory else { return }
+        let oldCategory = trackerCategory
+        var newTrackers = trackerCategory.trackers
+        newTrackers.append(tracker)
         let newCategory = TrackerCategory(id: oldCategory.id, name: oldCategory.name, trackers: newTrackers)
-        categories = [newCategory]
         do {
             try trackerStore?.addRecord(tracker, categoryId: newCategory.id)
         } catch let error {
@@ -216,8 +197,8 @@ final class TrackersViewController: UIViewController {
         self.emptyView = emptyView
     }
     
-    private func changeEmptyStateForCollectionView(show: Bool) {
-        emptyView?.isHidden = !show
+    private func changeEmptyViewVisibility(_ visible: Bool) {
+        emptyView?.isHidden = !visible
     }
 }
 
@@ -230,7 +211,7 @@ extension TrackersViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return trackerCategoryStore?.numbersOfObjectsInSection(section) ?? 0
+        return trackerCategoryStore?.numbersOfFilteredTrackersInSection(section) ?? 0
     }
     
     
@@ -239,7 +220,7 @@ extension TrackersViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? TrackerCollectionViewCell else {
             return UICollectionViewCell()
         }
-        guard let tracker = try? trackerCategoryStore?.object(at: indexPath) else {
+        guard let tracker = try? trackerCategoryStore?.filteredTracker(at: indexPath) else {
             return UICollectionViewCell()
         }
         updateCellStatusAndDayCount(cell: cell, tracker: tracker)
@@ -298,7 +279,7 @@ extension TrackersViewController: TrackerCategoryStoreDelegate {
     
     func didUpdate() {
         collectionView?.reloadData()
-        let show = trackerCategoryStore?.numberOfItems() == 0
-        changeEmptyStateForCollectionView(show: show)
+        let visible = trackerCategoryStore?.numberOfItems() == 0
+        changeEmptyViewVisibility(visible)
     }
 }

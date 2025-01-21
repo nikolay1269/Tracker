@@ -13,7 +13,8 @@ class SelectTrackerTypeViewController: UIViewController {
     private let habitButton = UIButton()
     private let eventButton = UIButton()
     private var newTracker: Tracker?
-    var trackerCreated: ((Tracker) -> Void)?
+    private var trackerCategory: TrackerCategory?
+    var trackerCreated: ((Tracker, TrackerCategory) -> Void)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,12 +78,13 @@ class SelectTrackerTypeViewController: UIViewController {
             createHabitViewController.trackerType = .event
         }
         
-        createHabitViewController.trackerCreated = { [weak self] newTracker in
+        createHabitViewController.trackerCreated = { [weak self] newTracker, trackerCategory in
             
             guard let self = self else { return }
             self.newTracker = newTracker
+            self.trackerCategory = trackerCategory
             guard let trackerCreated = self.trackerCreated else { return }
-            trackerCreated(newTracker)
+            trackerCreated(newTracker, trackerCategory)
             self.dismiss(animated: false)
         }
         self.present(createHabitViewController, animated: true)
