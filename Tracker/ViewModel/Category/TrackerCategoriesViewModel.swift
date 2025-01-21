@@ -11,6 +11,7 @@ final class TrackerCategoriesViewModel {
     
     // MARK: - Public Properties
     var trackerCategoryViewModelsBinding: Binding<[TrackerCategoryViewModel]>?
+    var onTrackerCategorySelected: Binding<TrackerCategoryViewModel?>?
     
     // MARK: - Private Properties
     private lazy var trackerCategoryStore: TrackerCategoryStoreProtocol? = {
@@ -43,6 +44,12 @@ final class TrackerCategoriesViewModel {
             try trackerCategoryStore?.addRecord(newTrackerCategory)
         } catch {
             print(error)
+        }
+    }
+    
+    func selectTrackerCategoryTappedAt(_ at: IndexPath) {
+        if let trackerCategoryViewModel = tracketCategoryViewModelAt(at) {
+            onTrackerCategorySelected?(trackerCategoryViewModel)
         }
     }
     

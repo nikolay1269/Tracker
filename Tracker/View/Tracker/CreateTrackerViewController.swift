@@ -316,7 +316,9 @@ extension CreateTrackerViewController: UITableViewDelegate {
         switch(indexPath.row) {
         case TrackerParamsTableView.category.rawValue:
             let trackerCategoriesViewController = TrackerCategoriesViewController()
-            trackerCategoriesViewController.onTrackerCategorySelected = { [weak self] trackerCategoryViewModel in
+            let viewModel = TrackerCategoriesViewModel()
+            trackerCategoriesViewController.viewModel = viewModel
+            trackerCategoriesViewController.viewModel?.onTrackerCategorySelected = { [weak self] trackerCategoryViewModel in
                 guard let self = self,
                       let id = trackerCategoryViewModel?.id,
                       let name = trackerCategoryViewModel?.name,

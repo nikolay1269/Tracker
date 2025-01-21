@@ -47,11 +47,9 @@ class TrackerCategoriesViewController: UIViewController {
     }()
     
     // MARK: - Public Properties
-    var onTrackerCategorySelected: Binding<TrackerCategoryViewModel?>?
+    var viewModel: TrackerCategoriesViewModel?
     
     // MARK: - Private Properties
-    private var viewModel: TrackerCategoriesViewModel?
-    
     private var emptyView: UIView?
     private let celldentifier = "cellIdentifier"
     
@@ -61,7 +59,6 @@ class TrackerCategoriesViewController: UIViewController {
         setupLayout()
         let categoryCount = viewModel?.numberOfCategories()
         changeEmptyViewVisibility(categoryCount == 0)
-        viewModel = TrackerCategoriesViewModel()
         viewModel?.trackerCategoryViewModelsBinding = { [weak self] _ in
             self?.trackerCategoriesTableView.reloadData()
         }
@@ -138,9 +135,7 @@ extension TrackerCategoriesViewController: UITableViewDelegate {
         
         let selectedCell = tableView.cellForRow(at: indexPath)
         selectedCell?.accessoryType = .checkmark
-        if let trackerCategoryViewModel = viewModel?.tracketCategoryViewModelAt(indexPath) {
-            onTrackerCategorySelected?(trackerCategoryViewModel)
-        }
+        viewModel?.selectTrackerCategoryTappedAt(indexPath)
         dismiss(animated: true)
     }
     
