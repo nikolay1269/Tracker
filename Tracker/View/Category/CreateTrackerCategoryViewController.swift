@@ -8,6 +8,8 @@
 import UIKit
 
 class CreateTrackerCategoryViewController: UIViewController {
+    
+    var viewModel: TrackerCategoriesViewModel?
 
     // MARK: - IB Outlets
     private lazy var newTrackerCategoryLabel: UILabel = {
@@ -28,7 +30,7 @@ class CreateTrackerCategoryViewController: UIViewController {
                                                           NSAttributedString.Key.foregroundColor : UIColor.white]
         let attributedTitle = NSAttributedString(string: "Готово", attributes: attributes)
         button.setAttributedTitle(attributedTitle, for: .normal)
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -51,13 +53,6 @@ class CreateTrackerCategoryViewController: UIViewController {
         return textField
     }()
     
-    // MARK: - Private Properties
-    private lazy var trackerCategoryStore: TrackerCategoryStoreProtocol? = {
-        let context = CoreDataManager.shared.context
-        let trackerCategoryStore = TrackerCategoryStore(context: context, date: Date(), delegate: nil)
-        return trackerCategoryStore
-    }()
-    
     // MARK: - View Life Cycles
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,14 +60,8 @@ class CreateTrackerCategoryViewController: UIViewController {
     }
     
     // MARK: - IB Actions
-    @objc private func buttonTapped() {
-
-        let newTrackerCategory = TrackerCategory(id: UUID(), name: trackerCategoryNameTextField.text ?? "", trackers: [])
-        do {
-            try trackerCategoryStore?.addRecord(newTrackerCategory)
-        } catch {
-            print(error)
-        }
+    @objc private func doneButtonTapped() {
+        viewModel?.addTrackerCategoryTapped(name: trackerCategoryNameTextField.text ?? "")
         dismiss(animated: true)
     }
     
@@ -103,7 +92,6 @@ class CreateTrackerCategoryViewController: UIViewController {
         NSLayoutConstraint.activate([
             trackerCategoryNameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             trackerCategoryNameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            //trackerCategoryNameTextField.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             trackerCategoryNameTextField.topAnchor.constraint(equalTo: newTrackerCategoryLabel.bottomAnchor, constant: 14),
             trackerCategoryNameTextField.heightAnchor.constraint(equalToConstant: 75),
             

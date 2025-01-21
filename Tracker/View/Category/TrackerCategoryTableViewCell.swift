@@ -8,10 +8,19 @@
 import UIKit
 
 class TrackerCategoryTableViewCell: UITableViewCell {
-
-    lazy var label: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    
+    // MARK: - Public Properties
+    var viewModel: TrackerCategoryViewModel? {
+        didSet {
+            viewModel?.nameBinding = { [weak self] name in
+                self?.textLabel?.text = name
+            }
+        }
+    }
+    
+    // MARK: - View Life Cycles
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        viewModel?.nameBinding = nil
+    }
 }

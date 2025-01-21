@@ -47,32 +47,31 @@ class TrackerCategoriesViewController: UIViewController {
     }()
     
     // MARK: - Public Properties
-    var onTrackerCategorySelected: Binding<TrackerCategory?>?
+    var onTrackerCategorySelected: Binding<TrackerCategoryViewModel?>?
     
     // MARK: - Private Properties
-    private lazy var trackerCategoryStore: TrackerCategoryStoreProtocol? = {
-        let context = CoreDataManager.shared.context
-        let trackerCategoryStore = TrackerCategoryStore(context: context, date: Date(), delegate: self)
-        return trackerCategoryStore
-    }()
+    private var viewModel: TrackerCategoriesViewModel?
     
     private var emptyView: UIView?
     private let celldentifier = "cellIdentifier"
-    private var selectedTrackerCategory: TrackerCategory?
-    private var selectedIndexPath: IndexPath?
     
     // MARK: - View Life Cycles
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
-        let categoryCount = trackerCategoryStore?.numberOfCategories() ?? 0
+        let categoryCount = viewModel?.numberOfCategories()
         changeEmptyViewVisibility(categoryCount == 0)
+        viewModel = TrackerCategoriesViewModel()
+        viewModel?.trackerCategoryViewModelsBinding = { [weak self] _ in
+            self?.trackerCategoriesTableView.reloadData()
+        }
     }
     
     // MARK: - IB Actions
     @objc private func addCategoryButtonTapped() {
 
         let createTrackerCategoryViewController = CreateTrackerCategoryViewController()
+        createTrackerCategoryViewController.viewModel = viewModel
         self.present(createTrackerCategoryViewController, animated: true)
     }
     
@@ -105,34 +104,25 @@ class TrackerCategoriesViewController: UIViewController {
     }
 }
 
-// MARK: - TrackerCategoryStoreDelegate
-extension TrackerCategoriesViewController: TrackerCategoryStoreDelegate {
-    
-    func didUpdate() {
-        trackerCategoriesTableView.reloadData()
-    }
-}
-
 // MARK: - UITableViewDataSource
 extension TrackerCategoriesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return trackerCategoryStore?.numberOfCategories() ?? 0
+        return viewModel?.numberOfCategories() ?? 0
     }
-    
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: celldentifier, for: indexPath) as? TrackerCategoryTableViewCell else {
             return UITableViewCell()
         }
         
-        let category = trackerCategoryStore?.category(at: indexPath)
-        cell.textLabel?.text = category?.name
+        let trackerCategoryViewModel = viewModel?.tracketCategoryViewModelAt(indexPath)
+        cell.viewModel = trackerCategoryViewModel
         cell.accessoryType = .none
         cell.backgroundColor = UIColor(named: "TextFieldBackgroundColor")
         cell.selectionStyle = .none
-        if indexPath.row == (trackerCategoryStore?.numberOfCategories() ?? 0) - 1 {
+        if indexPath.row == (viewModel?.numberOfCategories() ?? 0) - 1 {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: tableView.bounds.size.width)
         } else {
             cell.separatorInset = UIEdgeInsets.zero
@@ -146,22 +136,18 @@ extension TrackerCategoriesViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if let selectedIndexPath = selectedIndexPath {
-            let previousSelectedCell = tableView.cellForRow(at: selectedIndexPath)
-            previousSelectedCell?.accessoryType = .none
-        }
-        selectedTrackerCategory = trackerCategoryStore?.category(at: indexPath)
         let selectedCell = tableView.cellForRow(at: indexPath)
         selectedCell?.accessoryType = .checkmark
-        selectedIndexPath = indexPath
-        onTrackerCategorySelected?(selectedTrackerCategory)
+        if let trackerCategoryViewModel = viewModel?.tracketCategoryViewModelAt(indexPath) {
+            onTrackerCategorySelected?(trackerCategoryViewModel)
+        }
         dismiss(animated: true)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
         var corners: UIRectCorner = []
-        if indexPath.row == (trackerCategoryStore?.numberOfCategories() ?? 0) - 1 {
+        if indexPath.row == (viewModel?.numberOfCategories() ?? 0) - 1 {
             corners.update(with: .bottomLeft)
             corners.update(with: .bottomRight)
         }

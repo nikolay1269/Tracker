@@ -20,6 +20,8 @@
 		F342D6C22D31052B00572BA7 /* TrackerCategoryCoreData+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F342D6BE2D31052B00572BA7 /* TrackerCategoryCoreData+CoreDataClass.swift */; };
 		F342D6C32D31052B00572BA7 /* TrackerCategoryCoreData+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F342D6BF2D31052B00572BA7 /* TrackerCategoryCoreData+CoreDataProperties.swift */; };
 		F352C2B32D0F0324003D94F8 /* SelectTrackerTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F352C2B22D0F0324003D94F8 /* SelectTrackerTypeViewController.swift */; };
+		F35470C92D3F6DF700C8C21A /* TrackerCategoriesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35470C82D3F6DF700C8C21A /* TrackerCategoriesViewModel.swift */; };
+		F35470CB2D3F706A00C8C21A /* TrackerCategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35470CA2D3F706A00C8C21A /* TrackerCategoryViewModel.swift */; };
 		F36A489E2D0976C4008DBDD6 /* SupplementaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36A489D2D0976C4008DBDD6 /* SupplementaryView.swift */; };
 		F375D9E82CF87CBD00D19B7F /* TrackersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F375D9E72CF87CBD00D19B7F /* TrackersViewController.swift */; };
 		F375D9EB2CF8A04500D19B7F /* SF-Pro.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F375D9EA2CF8A03E00D19B7F /* SF-Pro.ttf */; };
@@ -66,6 +68,8 @@
 		F342D6BE2D31052B00572BA7 /* TrackerCategoryCoreData+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrackerCategoryCoreData+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F342D6BF2D31052B00572BA7 /* TrackerCategoryCoreData+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrackerCategoryCoreData+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F352C2B22D0F0324003D94F8 /* SelectTrackerTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectTrackerTypeViewController.swift; sourceTree = "<group>"; };
+		F35470C82D3F6DF700C8C21A /* TrackerCategoriesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCategoriesViewModel.swift; sourceTree = "<group>"; };
+		F35470CA2D3F706A00C8C21A /* TrackerCategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCategoryViewModel.swift; sourceTree = "<group>"; };
 		F36A489D2D0976C4008DBDD6 /* SupplementaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementaryView.swift; sourceTree = "<group>"; };
 		F375D9E72CF87CBD00D19B7F /* TrackersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrackersViewController.swift; sourceTree = "<group>"; };
 		F375D9EA2CF8A03E00D19B7F /* SF-Pro.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro.ttf"; sourceTree = "<group>"; };
@@ -264,6 +268,8 @@
 		F3D3D8F32D3BB9CE007BCD1A /* Category */ = {
 			isa = PBXGroup;
 			children = (
+				F35470C82D3F6DF700C8C21A /* TrackerCategoriesViewModel.swift */,
+				F35470CA2D3F706A00C8C21A /* TrackerCategoryViewModel.swift */,
 			);
 			path = Category;
 			sourceTree = "<group>";
@@ -379,12 +385,14 @@
 				F3908DD72D3E3191005D8046 /* CreateTrackerCategoryViewController.swift in Sources */,
 				F375D9EE2CF8A0A000D19B7F /* Date+String.swift in Sources */,
 				F352C2B32D0F0324003D94F8 /* SelectTrackerTypeViewController.swift in Sources */,
+				F35470C92D3F6DF700C8C21A /* TrackerCategoriesViewModel.swift in Sources */,
 				F342D6C02D31052B00572BA7 /* TrackerCoreData+CoreDataClass.swift in Sources */,
 				F341E2BA2D1D28C000472D44 /* WeekDayTransformer.swift in Sources */,
 				F3B75D8E2D3BD42700AF52F5 /* EmptyView.swift in Sources */,
 				F341E2B72D1D279400472D44 /* Tracker.xcdatamodeld in Sources */,
 				F31952112CF5AA0C009F3D77 /* SceneDelegate.swift in Sources */,
 				F38ACA9B2CFB3D46009A9753 /* StatisticsViewController.swift in Sources */,
+				F35470CB2D3F706A00C8C21A /* TrackerCategoryViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
