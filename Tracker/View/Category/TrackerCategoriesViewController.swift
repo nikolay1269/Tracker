@@ -60,7 +60,10 @@ class TrackerCategoriesViewController: UIViewController {
         let categoryCount = viewModel?.numberOfCategories()
         changeEmptyViewVisibility(categoryCount == 0)
         viewModel?.trackerCategoryViewModelsBinding = { [weak self] _ in
-            self?.trackerCategoriesTableView.reloadData()
+            guard let self = self else { return }
+            self.trackerCategoriesTableView.reloadData()
+            let categoryCount = self.viewModel?.numberOfCategories()
+            self.changeEmptyViewVisibility(categoryCount == 0)
         }
     }
     
@@ -78,12 +81,12 @@ class TrackerCategoriesViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(trackerCategoriesTableView)
         view.addSubview(trackerCategoriesLabel)
-        view.addSubview(addCategoryButton)
         emptyView = EmptyView(rootView: view, parentView: trackerCategoriesTableView, text: "Привычки и события можно объединить по смыслу")
+        view.addSubview(addCategoryButton)
         NSLayoutConstraint.activate([
             trackerCategoriesTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             trackerCategoriesTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            trackerCategoriesTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            trackerCategoriesTableView.bottomAnchor.constraint(equalTo: addCategoryButton.topAnchor, constant: -14),
             trackerCategoriesTableView.topAnchor.constraint(equalTo: trackerCategoriesLabel.bottomAnchor, constant: 14),
             
             trackerCategoriesLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 28),

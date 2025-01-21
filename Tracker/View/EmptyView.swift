@@ -14,8 +14,6 @@ class EmptyView: UIView {
         
         self.translatesAutoresizingMaskIntoConstraints = false
         rootView.addSubview(self)
-        self.layer.borderColor = UIColor.red.cgColor
-        self.layer.borderWidth = 1
         self.leadingAnchor.constraint(equalTo: parentView.leadingAnchor).isActive = true
         self.trailingAnchor.constraint(equalTo: parentView.trailingAnchor).isActive = true
         self.topAnchor.constraint(equalTo: parentView.topAnchor).isActive = true
