@@ -14,8 +14,8 @@ class OnboardingPageViewController: UIPageViewController {
         let pageControl = UIPageControl()
         pageControl.numberOfPages = pages.count
         pageControl.currentPage = 0
-        pageControl.currentPageIndicatorTintColor = UIColor(named: "YPGray")
-        pageControl.pageIndicatorTintColor = UIColor(named: "YPBlack")
+        pageControl.currentPageIndicatorTintColor = UIColor(named: "YPBlack")
+        pageControl.pageIndicatorTintColor = UIColor(named: "YPGray")
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         return pageControl
     }()
@@ -36,6 +36,9 @@ class OnboardingPageViewController: UIPageViewController {
     }()
     
     // MARK: - Private Properties
+    private let onboardingLaunchedKey = "onboardingLaunched"
+    private var onboardingLaunched = false
+    
     private lazy var pages: [OnboardingContentViewController] = {
         let first = OnboardingContentViewController()
         first.imageView.image = UIImage(named: "OnboardingImage1")
@@ -56,16 +59,25 @@ class OnboardingPageViewController: UIPageViewController {
             setViewControllers([first], direction: .forward, animated: true)
         }
         setupLayout()
+        onboardingLaunched = UserDefaults.standard.bool(forKey: onboardingLaunchedKey)
     }
     
     // MARK: - IB Actions
     @objc private func buttonTapped() {
+        
+        if onboardingLaunched {
+            switchToTabbaraViewController()
+        } else {
+            UserDefaults.standard.set(true, forKey: onboardingLaunchedKey)
+        }
+        
         if let currentViewController = self.viewControllers?.first as? OnboardingContentViewController, let currentIndex = pages.firstIndex(of: currentViewController) {
             
             switch(currentIndex) {
             case 0:
                 let secondViewController = pages[1]
                 setViewControllers([secondViewController], direction: .forward, animated: true)
+                pageViewController(self, didFinishAnimating: true, previousViewControllers: [], transitionCompleted: true)
             case 1:
                 switchToTabbaraViewController()
             default:
@@ -102,6 +114,7 @@ class OnboardingPageViewController: UIPageViewController {
 
 // MARK: - UIPageViewControllerDelegate
 extension OnboardingPageViewController: UIPageViewControllerDelegate {
+    
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         
         if let currentViewController = pageViewController.viewControllers?.first as? OnboardingContentViewController,

@@ -133,7 +133,6 @@
 				F3D3D8F02D3BB90E007BCD1A /* Model */,
 				F3D3D8F12D3BB959007BCD1A /* View */,
 				F3D3D8F22D3BB999007BCD1A /* ViewModel */,
-				F3A4443C2D3A3BE8005F4C03 /* Onboarding */,
 				F341E2B82D1D28A200472D44 /* CoreData */,
 				F375D9EC2CF8A08E00D19B7F /* Extensions */,
 				F319520E2CF5AA0C009F3D77 /* AppDelegate.swift */,
@@ -252,6 +251,7 @@
 				F3D2CC672D11A3DD00A65920 /* Schedule */,
 				F3DC95C72CF5F32300FF7CCE /* Splash */,
 				F3B75D8D2D3BD42700AF52F5 /* EmptyView.swift */,
+				F3A4443C2D3A3BE8005F4C03 /* Onboarding */,
 			);
 			path = View;
 			sourceTree = "<group>";
