@@ -29,7 +29,7 @@ class SelectTrackerTypeViewController: UIViewController {
         view.addSubview(titleLabel)
         titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 35).isActive = true
         titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        titleLabel.text = "Создание трекера"
+        titleLabel.text = NSLocalizedString("Creating a tracker", comment: "Title of crating tracker screen")
         titleLabel.font = UIFont(name: "SF Pro Medium", size: 16)
         titleLabel.textAlignment = .center 
     }
@@ -41,7 +41,7 @@ class SelectTrackerTypeViewController: UIViewController {
         habitButton.backgroundColor = UIColor(named: "YPBlack")
         let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.font : UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 16),
                                                           NSAttributedString.Key.foregroundColor : UIColor.white]
-        let attributedTitle = NSAttributedString(string: "Привычка", attributes: attributes)
+        let attributedTitle = NSAttributedString(string: NSLocalizedString("Habit", comment: "Title of select tracker type screen button"), attributes: attributes)
         habitButton.setAttributedTitle(attributedTitle, for: .normal)
         habitButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         habitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
@@ -58,7 +58,7 @@ class SelectTrackerTypeViewController: UIViewController {
         eventButton.backgroundColor = UIColor(named: "YPBlack")
         let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.font : UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 16),
                                                           NSAttributedString.Key.foregroundColor : UIColor.white]
-        let attributedTitle = NSAttributedString(string: "Нерегулярное событие", attributes: attributes)
+        let attributedTitle = NSAttributedString(string: NSLocalizedString("Event", comment: "Title of select tracker type screen button"), attributes: attributes)
         eventButton.setAttributedTitle(attributedTitle, for: .normal)
         eventButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         eventButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true

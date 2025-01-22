@@ -23,14 +23,14 @@ class OnboardingPageViewController: UIPageViewController {
     private lazy var button: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Вот это технологии!", for: .normal)
         button.backgroundColor = .red
         button.layer.cornerRadius = 16
         button.backgroundColor = UIColor(named: "YPBlack")
         let font = UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 16)
         let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.font : font,
                                                           NSAttributedString.Key.foregroundColor : UIColor.white]
-        let attributedTitle = NSAttributedString(string: "Вот это технологии!", attributes: attributes)
+        let attributedTitle = NSAttributedString(string: NSLocalizedString("Now that's technology!", comment: "Onboarding button title"), attributes: attributes)
+        button.setAttributedTitle(attributedTitle, for: .normal)
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         return button
     }()
@@ -42,10 +42,10 @@ class OnboardingPageViewController: UIPageViewController {
     private lazy var pages: [OnboardingContentViewController] = {
         let first = OnboardingContentViewController()
         first.imageView.image = UIImage(named: "OnboardingImage1")
-        first.label.text = "Отслеживайте только то, что хотите"
+        first.label.text = NSLocalizedString("Track only what you want", comment: "Onboarding label 1")
         let second = OnboardingContentViewController()
         second.imageView.image = UIImage(named: "OnboardingImage2")
-        second.label.text = "Даже если это не литры воды и йога"
+        second.label.text = NSLocalizedString("Even it is not liters of water and yoga", comment: "Onboarding label 2")
         return [first, second]
     }()
 

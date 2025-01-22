@@ -27,7 +27,7 @@ class TrackerCategoriesViewController: UIViewController {
     private lazy var trackerCategoriesLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Категория"
+        label.text = NSLocalizedString("Category", comment: "Categories screen title")
         label.font = UIFont(name: "SF Pro Regular", size: 16)
         return label
     }()
@@ -40,7 +40,7 @@ class TrackerCategoriesViewController: UIViewController {
         let font = UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 16)
         let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.font : font,
                                                           NSAttributedString.Key.foregroundColor : UIColor.white]
-        let attributedTitle = NSAttributedString(string: "Добавить категорию", attributes: attributes)
+        let attributedTitle = NSAttributedString(string: NSLocalizedString("Add category", comment: "Create category button title"), attributes: attributes)
         button.setAttributedTitle(attributedTitle, for: .normal)
         button.addTarget(self, action: #selector(addCategoryButtonTapped), for: .touchUpInside)
         return button
@@ -81,7 +81,7 @@ class TrackerCategoriesViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(trackerCategoriesTableView)
         view.addSubview(trackerCategoriesLabel)
-        emptyView = EmptyView(rootView: view, parentView: trackerCategoriesTableView, text: "Привычки и события можно объединить по смыслу")
+        emptyView = EmptyView(rootView: view, parentView: trackerCategoriesTableView, text: NSLocalizedString("Habits and events can be combined by meaning", comment: "Empty categories screen text"))
         view.addSubview(addCategoryButton)
         NSLayoutConstraint.activate([
             trackerCategoriesTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),

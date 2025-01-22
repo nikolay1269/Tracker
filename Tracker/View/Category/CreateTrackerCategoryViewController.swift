@@ -15,7 +15,7 @@ class CreateTrackerCategoryViewController: UIViewController {
     private lazy var newTrackerCategoryLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Новая категория"
+        label.text = NSLocalizedString("New category", comment: "New category screen title")
         label.font = UIFont(name: "SF Pro Regular", size: 16)
         return label
     }()
@@ -28,7 +28,7 @@ class CreateTrackerCategoryViewController: UIViewController {
         let font = UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 16)
         let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.font : font,
                                                           NSAttributedString.Key.foregroundColor : UIColor.white]
-        let attributedTitle = NSAttributedString(string: "Готово", attributes: attributes)
+        let attributedTitle = NSAttributedString(string: NSLocalizedString("Done", comment: "Done button title"), attributes: attributes)
         button.setAttributedTitle(attributedTitle, for: .normal)
         button.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
         return button
@@ -38,7 +38,7 @@ class CreateTrackerCategoryViewController: UIViewController {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         let attributes = [NSAttributedString.Key.foregroundColor : UIColor(named: "YPGray") ?? .gray]
-        let attributePlacedHolder = NSAttributedString(string: "Введите название категории", attributes: attributes)
+        let attributePlacedHolder = NSAttributedString(string: NSLocalizedString("Enter category name", comment: "New category name text field placeholder"), attributes: attributes)
         textField.attributedPlaceholder = attributePlacedHolder
         textField.backgroundColor = UIColor(named: "TextFieldBackgroundColor")
         textField.textColor = UIColor(named: "YPBlack")

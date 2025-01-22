@@ -101,7 +101,7 @@ final class TrackersViewController: UIViewController {
         datePicker.date = currentDate
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
-        datePicker.locale = Locale(identifier: "ru_Ru")
+        datePicker.locale = Locale.current
         datePicker.calendar.firstWeekday = 2
         datePicker.overrideUserInterfaceStyle = .light
         let datePickerBarButtonItem = UIBarButtonItem(customView: datePicker)
@@ -119,7 +119,7 @@ final class TrackersViewController: UIViewController {
     private func addTrackersLabel() {
         let trackersLabel = UILabel()
         trackersLabel.translatesAutoresizingMaskIntoConstraints = false
-        trackersLabel.text = "Трекеры"
+        trackersLabel.text = NSLocalizedString("Trackers", comment: "Title of main screen")
         trackersLabel.font = UIFont(name: "SF Pro Bold", size: 34)
         view.addSubview(trackersLabel)
         trackersLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive  = true
@@ -143,7 +143,7 @@ final class TrackersViewController: UIViewController {
         }
         
         let attributes = [NSAttributedString.Key.foregroundColor : UIColor(named: "YPGray") ?? .gray]
-        let attributePlacedHolder = NSAttributedString(string: "Поиск", attributes: attributes)
+        let attributePlacedHolder = NSAttributedString(string: NSLocalizedString("Search", comment: "Search field placehodler"), attributes: attributes)
         searchTextField.attributedPlaceholder = attributePlacedHolder
         searchTextField.addTarget(self, action: #selector(searchTextFieldValueChanged), for: .editingChanged)
         self.searchTextField = searchTextField
@@ -188,7 +188,7 @@ final class TrackersViewController: UIViewController {
         imageView.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor).isActive = true
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Что будем отслеживать?"
+        label.text = NSLocalizedString("What will we monitor?", comment: "Empty view text")
         label.font = UIFont(name: "SF Pro Medium", size: 12)
         label.textAlignment = .center
         emptyView.addSubview(label)

@@ -27,11 +27,20 @@ class ScheduleViewController: UIViewController {
     private let titleLabel = UILabel()
     private let doneButton = UIButton()
     private let scheduleCellIdentifier = "scheduleCellIdentifier"
-    private let dayOfWeekNames = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
+    private let dayOfWeekNames = [NSLocalizedString("Monday", comment: "Day of week"),
+                                  NSLocalizedString("Tuesday", comment: "Day of week"),
+                                  NSLocalizedString("Wednesday", comment: "Day of week"),
+                                  NSLocalizedString("Thursday", comment: "Day of week"),
+                                  NSLocalizedString("Friday", comment: "Day of week"),
+                                  NSLocalizedString("Saturday", comment: "Day of week"),
+                                  NSLocalizedString("Sunday", comment: "Day of week")]
+    
     var dayOfWeekSelected: Set<WeekDay> = Set<WeekDay>()
     var scheduleSelected: ((Set<WeekDay>) -> Void)?
 
     override func viewDidLoad() {
+        
+        
         super.viewDidLoad()
         view.backgroundColor = .white
         addTitle()
@@ -44,7 +53,7 @@ class ScheduleViewController: UIViewController {
         view.addSubview(titleLabel)
         titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 35).isActive = true
         titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        titleLabel.text = "Расписание"
+        titleLabel.text = NSLocalizedString("Schedule", comment: "Schedule screen title")
         titleLabel.font = UIFont(name: "SF Pro Medium", size: 16)
         titleLabel.textColor = UIColor(named: "YPBlack")
         titleLabel.textAlignment = .center
@@ -73,7 +82,7 @@ class ScheduleViewController: UIViewController {
         let font = UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 17)
         let color = UIColor(named: "YPWhite") ?? .white
         let attributes = [NSAttributedString.Key.font : font, NSAttributedString.Key.foregroundColor : color]
-        let attributedTitle = NSAttributedString(string: "Готово", attributes: attributes)
+        let attributedTitle = NSAttributedString(string: NSLocalizedString("Done", comment: "Done button title"), attributes: attributes)
         doneButton.setAttributedTitle(attributedTitle, for: .normal)
         doneButton.layer.cornerRadius = 16
         doneButton.backgroundColor = UIColor(named: "YPBlack")

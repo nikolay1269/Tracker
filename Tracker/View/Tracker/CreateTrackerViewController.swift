@@ -103,9 +103,9 @@ class CreateTrackerViewController: UIViewController {
         titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         switch(trackerType) {
         case .habit:
-            titleLabel.text = "Новая привычка"
+            titleLabel.text = NSLocalizedString("New habit", comment: "Title of new tracker screen")
         case .event:
-            titleLabel.text = "Новое нерегулярное событие"
+            titleLabel.text = NSLocalizedString("New event", comment: "Title of new tracker screen")
         case .none:
             break
         }
@@ -118,7 +118,7 @@ class CreateTrackerViewController: UIViewController {
         maxLengthLabel.translatesAutoresizingMaskIntoConstraints = false
         maxLabelHeightConstraint =  maxLengthLabel.heightAnchor.constraint(equalToConstant: 0)
         maxLabelHeightConstraint?.isActive = true
-        maxLengthLabel.text = "Ограничение 38 символов"
+        maxLengthLabel.text = NSLocalizedString("Limit 38 characters", comment: "Max length text")
         maxLengthLabel.textAlignment = .center
         maxLengthLabel.textColor = UIColor(named: "YPRed")
         maxLengthLabel.font = UIFont(name: "SF Pro Regular", size: 17)
@@ -140,7 +140,7 @@ class CreateTrackerViewController: UIViewController {
     private func addNameTextField() {
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
         nameStackView.addSubview(nameTextField)
-        nameTextField.placeholder = "Введите название трекера"
+        nameTextField.placeholder = NSLocalizedString("Enter tracker name", comment: "Placehodler tracker name text")
         nameTextField.font = UIFont(name: "SF Pro Regular", size: 17)
         nameTextField.backgroundColor = UIColor(named: "TextFieldBackgroundColor")
         nameTextField.heightAnchor.constraint(equalToConstant: 75).isActive = true
@@ -184,7 +184,7 @@ class CreateTrackerViewController: UIViewController {
         let font = UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 17)
         let color = UIColor(named: "YPWhite") ?? UIColor.black
         let attributes = [NSAttributedString.Key.font : font, NSAttributedString.Key.foregroundColor : color]
-        let attributedTitle = NSAttributedString(string: "Создать", attributes: attributes)
+        let attributedTitle = NSAttributedString(string: NSLocalizedString("Create", comment: "Create button title"), attributes: attributes)
         createButton.setAttributedTitle(attributedTitle, for: .normal)
         createButton.layer.cornerRadius = 16
         createButton.backgroundColor = UIColor(named: "YPGray")
@@ -210,7 +210,7 @@ class CreateTrackerViewController: UIViewController {
         let font = UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 17)
         let color = UIColor(named: "YPRed") ?? UIColor.black
         let attributes = [NSAttributedString.Key.font : font, NSAttributedString.Key.foregroundColor : color]
-        let attributedTitle = NSAttributedString(string: "Отменить", attributes: attributes)
+        let attributedTitle = NSAttributedString(string: NSLocalizedString("Cancel", comment: "Title of cancel button title"), attributes: attributes)
         cancelButton.setAttributedTitle(attributedTitle, for: .normal)
         cancelButton.layer.cornerRadius = 16
         cancelButton.layer.borderColor = UIColor(named: "YPRed")?.cgColor
@@ -297,10 +297,10 @@ extension CreateTrackerViewController: UITableViewDataSource {
         }
         switch (indexPath.row) {
         case TrackerParamsTableView.category.rawValue:
-            cell.textLabel?.text = "Категория"
+            cell.textLabel?.text = NSLocalizedString("Category", comment: "Tracker category param title")
             cell.detailTextLabel?.text = selectedTrackerCategory?.name
         case TrackerParamsTableView.schedule.rawValue:
-            cell.textLabel?.text = "Расписание"
+            cell.textLabel?.text = NSLocalizedString("Schedule", comment: "Tracker schedule param title")
         default:
             break
         }
@@ -344,19 +344,19 @@ extension CreateTrackerViewController: UITableViewDelegate {
                     var shortDayOfWeek = ""
                     switch(dayOfWeek) {
                     case .monday:
-                        shortDayOfWeek = "Пн"
+                        shortDayOfWeek = NSLocalizedString("Mo", comment: "Short day of week")
                     case .tuesday:
-                        shortDayOfWeek = "Вт"
+                        shortDayOfWeek = NSLocalizedString("Tu", comment: "Short day of week")
                     case .wednesday:
-                        shortDayOfWeek = "Ср"
+                        shortDayOfWeek = NSLocalizedString("We", comment: "Short day of week")
                     case .thursday:
-                        shortDayOfWeek = "Чт"
+                        shortDayOfWeek = NSLocalizedString("Th", comment: "Short day of week")
                     case .friday:
-                        shortDayOfWeek = "Пт"
+                        shortDayOfWeek = NSLocalizedString("Fr", comment: "Short day of week")
                     case .saturday:
-                        shortDayOfWeek = "Сб"
+                        shortDayOfWeek = NSLocalizedString("Sa", comment: "Short day of week")
                     case .sunday:
-                        shortDayOfWeek = "Вс"
+                        shortDayOfWeek = NSLocalizedString("Su", comment: "Short day of week")
                     }
                     scheduleInfo.append("\(shortDayOfWeek), ")
                 }
@@ -400,9 +400,9 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
         let currentParam = TrackerParamsCollectionView(rawValue: indexPath.section)
         switch(currentParam) {
         case .emoji:
-            headerView.titleLabel.text = "Emoji"
+            headerView.titleLabel.text = NSLocalizedString("Emoji", comment: "Title for emoji collection")
         case .color:
-            headerView.titleLabel.text = "Цвет"
+            headerView.titleLabel.text = NSLocalizedString("Color", comment: "Title for color collection")
         case .none:
             break
         }
