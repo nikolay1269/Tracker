@@ -1,0 +1,9 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Nikolay on 22.01.2025.
+  
+*/
+
+"daysCount" = "%d %@";

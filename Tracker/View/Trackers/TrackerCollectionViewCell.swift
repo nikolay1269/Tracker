@@ -126,17 +126,8 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         statusButton.backgroundColor = tracker.color
         trackerNameLabel.text = tracker.name
         emojiLabel.text = tracker.emoji
-        daysCountLabel.text = "\(daysCount) \(formattedDays(daysCount: daysCount))"
+        let daysString = String.localizedStringWithFormat(NSLocalizedString("numberOfDays", comment: "Number of remaining days"), daysCount)
+        daysCountLabel.text = String.localizedStringWithFormat(NSLocalizedString("daysCount", comment: ""), daysCount, daysString)
         changeStatus(isDone: status)
-    }
-    
-    private func formattedDays(daysCount: Int) -> String {
-        if daysCount % 10 == 1 && daysCount != 11 {
-            return "день"
-        } else if daysCount % 10 > 1 && daysCount % 10 < 5 && daysCount != 12 && daysCount != 13 && daysCount != 14 {
-            return "дня"
-        } else {
-            return "дней"
-        }
     }
 }
