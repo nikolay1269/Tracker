@@ -84,13 +84,24 @@ final class TrackersViewController: UIViewController {
     }
     
     private func addNewTracker(tracker: Tracker, trackerCategory: TrackerCategory) {
-
-        let oldCategory = trackerCategory
-        var newTrackers = trackerCategory.trackers
-        newTrackers.append(tracker)
-        let newCategory = TrackerCategory(id: oldCategory.id, name: oldCategory.name, trackers: newTrackers)
         do {
-            try trackerStore?.addRecord(tracker, categoryId: newCategory.id)
+            try trackerStore?.addRecord(tracker, categoryId: trackerCategory.id)
+        } catch let error {
+            print(error)
+        }
+    }
+    
+    private func updateTracker(tracker: Tracker, trackerCategory: TrackerCategory) {
+        do {
+            try trackerStore?.updateRecord(tracker, categoryId: trackerCategory.id)
+        } catch let error {
+            print(error)
+        }
+    }
+    
+    private func deleteTracker(tracker: Tracker) {
+        do {
+            try trackerStore?.deleteRecord(tracker)
         } catch let error {
             print(error)
         }
@@ -272,6 +283,91 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         
         return 9
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        guard let firstIndexPath = indexPaths.first,
+              let tracker = try? trackerCategoryStore?.filteredTracker(at: firstIndexPath),
+              let category = trackerCategoryStore?.filteredCategory(at: firstIndexPath)
+        else
+        {
+            return nil
+        }
+        
+        let contextMenuConfiguration = UIContextMenuConfiguration(identifier: nil, previewProvider: { [weak self] in self?.makePreview(indexPath: firstIndexPath) }) { (action) -> UIMenu? in
+            
+            let pinTitle = NSLocalizedString("Pin", comment: "Tracker context pin menu item")
+            let pin = UIAction(title: pinTitle) { _ in
+                //TODO: move tracker to "Pin" cateogry
+            }
+                
+            let unpinTitle = NSLocalizedString("Unpin", comment: "Tracker context unpin menu item")
+            let unpin = UIAction(title: unpinTitle) { _ in
+                //TODO: move tracker from "Pin" category to it's navite category
+            }
+                
+            let editTitle = NSLocalizedString("Edit", comment: "Tracker context edit menu item")
+            let edit = UIAction(title: editTitle) { [weak self] _ in
+                guard let self = self else { return }
+                let createTrackerViewController = CreateTrackerViewController()
+                createTrackerViewController.mode = .edit
+                createTrackerViewController.currentTracker = tracker
+                createTrackerViewController.selectedTrackerCategory = category
+                createTrackerViewController.trackerCreated = { [weak self] newTracker, trackerCategory in
+                    guard let self = self else { return }
+                    self.updateTracker(tracker: newTracker, trackerCategory: trackerCategory)
+                    self.collectionView?.reloadData()
+                }
+                let daysCount = self.trackerRecordStore?.trackerCompletedCount(tracker) ?? 0
+                createTrackerViewController.daysCount = daysCount
+                if tracker.schedule.count > 0 {
+                    createTrackerViewController.trackerType = .habit
+                } else {
+                    createTrackerViewController.trackerType = .event
+                }
+                self.present(createTrackerViewController, animated: true)
+            }
+            
+            let deleteTitle = NSLocalizedString("Delete", comment: "Tracker context delete menu item")
+            let delete = UIAction(title: deleteTitle, attributes: .destructive) { [weak self] _ in
+                let title = NSLocalizedString("Are you sure you want to remove the tracker?", comment: "Title of delete action sheet")
+                let alert = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
+                let deleteTitle = NSLocalizedString("Delete", comment: "")
+                alert.addAction(UIAlertAction(title: deleteTitle, style: .destructive , handler: { [weak self] (UIAlertAction) in
+                        self?.deleteTracker(tracker: tracker)
+                    }))
+                let cancelTitle = NSLocalizedString("Cancel", comment: "")
+                alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel , handler: { (UIAlertAction) in
+                    alert.dismiss(animated: true)
+                }))
+                self?.present(alert, animated: true)
+            }
+            
+            //TODO: Get track by Index Path and select which menu item should be added
+            let isPin = true
+            if isPin {
+                return UIMenu(options: UIMenu.Options.displayInline, children: [pin, edit, delete])
+            } else {
+                return UIMenu(options: UIMenu.Options.displayInline, children: [unpin, edit, delete])
+            }
+        }
+        return contextMenuConfiguration
+    }
+    
+    private func makePreview(indexPath: IndexPath) -> UIViewController {
+        let vc = UIViewController()
+        guard let currentCell = collectionView?.cellForItem(at: indexPath) as? TrackerCollectionViewCell else {
+            return vc
+        }
+        let renderer = UIGraphicsImageRenderer(size: currentCell.mainView.bounds.size)
+        let image = renderer.image { ctx in
+            currentCell.mainView.drawHierarchy(in: currentCell.mainView.bounds, afterScreenUpdates: true)
+        }
+        let imageView = UIImageView(image: image)
+        vc.view = imageView
+        vc.preferredContentSize = imageView.frame.size
+        return vc
     }
 }
 

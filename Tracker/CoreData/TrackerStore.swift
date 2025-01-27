@@ -19,6 +19,8 @@ enum TrackerStoreError: Error {
 
 protocol TrackerStoreProtocol {
     func addRecord(_ record: Tracker, categoryId: UUID) throws
+    func updateRecord(_ record: Tracker, categoryId: UUID) throws
+    func deleteRecord(_ record: Tracker) throws
 }
 
 final class TrackerStore: NSObject {
@@ -43,6 +45,38 @@ extension TrackerStore: TrackerStoreProtocol {
         trackerCoreData.category = trackerCategoryCoreData
         trackerCategoryCoreData?.addToTrackers(trackerCoreData)
         CoreDataManager.shared.saveContext()
+    }
+    
+    func updateRecord(_ record: Tracker, categoryId: UUID) throws {
+        let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = NSPredicate(format: "%K == %@", (\TrackerCoreData.id)._kvcKeyPathString!, record.id as CVarArg)
+        do {
+            let updatedTracker = try context.fetch(fetchRequest).first
+            updatedTracker?.name = record.name
+            updatedTracker?.emoji = record.emoji
+            updatedTracker?.colorHex = UIColor.hexFromColor(color: record.color)
+            updatedTracker?.schedule = intFromWeekDays(record.schedule)
+            let category = findCategoryById(categoryId)
+            updatedTracker?.category = category
+            try context.save()
+        } catch {
+            print(error)
+        }
+    }
+    
+    func deleteRecord(_ record: Tracker) throws {
+        let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        fetchRequest.returnsObjectsAsFaults = false
+        fetchRequest.predicate = NSPredicate(format: "%K == %@", (\TrackerCoreData.id)._kvcKeyPathString!, record.id as CVarArg)
+        do {
+            if let deletedTracker = try context.fetch(fetchRequest).first {
+                context.delete(deletedTracker)
+                try context.save()
+            }
+        } catch {
+            print(error)
+        }
     }
     
     private func findCategoryById(_ categoryId: UUID) -> TrackerCategoryCoreData? {

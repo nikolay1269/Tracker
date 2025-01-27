@@ -9,7 +9,7 @@ import UIKit
 
 class ScheduleTableViewCell: UITableViewCell {
     
-    let dayOfWeekSwitch = UISwitch()
+    private let dayOfWeekSwitch = UISwitch()
     var dayOfWeekValueChanged: ((Bool) -> Void)?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -20,6 +20,15 @@ class ScheduleTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        dayOfWeekSwitch.isOn = false
+    }
+    
+    func setCellSelected(_ selected: Bool) {
+        dayOfWeekSwitch.isOn = selected
     }
     
     private func addDayOfWeekSwitch() {

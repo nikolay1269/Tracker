@@ -48,6 +48,8 @@ class TrackerCategoriesViewController: UIViewController {
     
     // MARK: - Public Properties
     var viewModel: TrackerCategoriesViewModel?
+    var selectedCategory: TrackerCategory?
+    var mode: ScreenMode?
     
     // MARK: - Private Properties
     private var emptyView: UIView?
@@ -65,6 +67,15 @@ class TrackerCategoriesViewController: UIViewController {
             let categoryCount = self.viewModel?.numberOfCategories()
             self.changeEmptyViewVisibility(categoryCount == 0)
         }
+        trackerCategoriesTableView.performBatchUpdates({}, completion: { isCompleted in
+            if isCompleted {
+                if let selectedCategory = self.selectedCategory {
+                    let selectedCategoryIndex = self.viewModel?.getNumberOfCategory(category: selectedCategory)
+                    let cell = self.trackerCategoriesTableView.cellForRow(at: IndexPath(row: selectedCategoryIndex ?? 0, section: 0))
+                    cell?.accessoryType = .checkmark
+                }
+            }
+        })
     }
     
     // MARK: - IB Actions

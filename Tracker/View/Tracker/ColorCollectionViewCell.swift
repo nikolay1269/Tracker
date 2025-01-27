@@ -24,6 +24,12 @@ class ColorCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - View Life Cycles
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        setSelectedStatus(selected: false)
+    }
 
     // MARK: - Public Methods
     func configureCell(color: UIColor) {

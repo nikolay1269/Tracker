@@ -53,12 +53,19 @@ final class TrackerCategoriesViewModel {
         }
     }
     
+    func getNumberOfCategory(category: TrackerCategory) -> Int {
+        guard let alldCategories = trackerCategoryStore?.allTrackerCategories() else {
+            return 0
+        }
+        return alldCategories.firstIndex(where: { $0.id == category.id }) ?? 0
+    }
+    
     // MARK: - Private Methods
     private func getTrackerCategoriesViewModelsFromStore() -> [TrackerCategoryViewModel] {
-        guard let filteredCategories = trackerCategoryStore?.allTrackerCategories() else {
+        guard let alldCategories = trackerCategoryStore?.allTrackerCategories() else {
             return []
         }
-        return filteredCategories.map {
+        return alldCategories.map {
             TrackerCategoryViewModel(id: $0.id, name: $0.name, trackers: $0.trackers)
         }
     }

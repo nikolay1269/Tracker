@@ -9,14 +9,21 @@ import UIKit
 
 final class TrackerCollectionViewCell: UICollectionViewCell {
     
-    let trackerNameLabel = UILabel()
-    let emojiLabel = UILabel()
-    let emojiContainerView = UIView()
-    let statusButton = UIButton()
+    // MARK: - IB Outlets
     let mainView = UIView()
-    let daysCountLabel = UILabel()
+    private let trackerNameLabel = UILabel()
+    private let emojiLabel = UILabel()
+    private let emojiContainerView = UIView()
+    private let statusButton = UIButton()
+    private var pinImageView: UIImageView?
+    
+    // MARK: - Public Properties
     var trackerStatusChanged: (() -> Void)?
     
+    // MARK: - Private Properties
+    private let daysCountLabel = UILabel()
+    
+    // MARK: - Initializers
     override init(frame: CGRect) {
         super.init(frame: frame)
         addMainView()
@@ -30,6 +37,36 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - View Life Cycles
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        pinImageView = nil
+    }
+    
+    // MARK: - IB Actions
+    @objc private func statusButtonTapped() {
+        guard let trackerStatusChanged = trackerStatusChanged else { return }
+        trackerStatusChanged()
+    }
+    
+    // MARK: - Public Methods
+    func configureCell(tracker: Tracker, status: Bool, daysCount: Int) {
+        mainView.backgroundColor = tracker.color
+        statusButton.backgroundColor = tracker.color
+        trackerNameLabel.text = tracker.name
+        emojiLabel.text = tracker.emoji
+        let daysString = String.localizedStringWithFormat(NSLocalizedString("numberOfDays", comment: "Number of remaining days"), daysCount)
+        daysCountLabel.text = String.localizedStringWithFormat(NSLocalizedString("daysCount", comment: "Correct form of 'word' day"), daysCount, daysString)
+        changeStatus(isDone: status)
+        let isPin = false
+        if isPin {
+            if pinImageView == nil {
+                addPinImageView()
+            }
+        }
+    }
+    
+    // MARK: - Private Methods
     private func addDaysCountLabel() {
         daysCountLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(daysCountLabel)
@@ -52,12 +89,6 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         statusButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
         statusButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -12).isActive = true
         statusButton.addTarget(self, action: #selector(statusButtonTapped), for: .touchUpInside)
-    }
-    
-    @objc private func statusButtonTapped() {
-        
-        guard let trackerStatusChanged = trackerStatusChanged else { return }
-        trackerStatusChanged()
     }
     
     private func changeStatus(isDone: Bool) {
@@ -83,7 +114,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         emojiContainerView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: 12).isActive = true
         emojiContainerView.backgroundColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.3)
         emojiContainerView.layer.masksToBounds = true
-        emojiContainerView.layer.cornerRadius = 15
+        emojiContainerView.layer.cornerRadius = 16
         
         emojiLabel.translatesAutoresizingMaskIntoConstraints = false
         emojiContainerView.addSubview(emojiLabel)
@@ -121,13 +152,18 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         trackerNameLabel.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 8).isActive = true
     }
     
-    func configureCell(tracker: Tracker, status: Bool, daysCount: Int) {
-        mainView.backgroundColor = tracker.color
-        statusButton.backgroundColor = tracker.color
-        trackerNameLabel.text = tracker.name
-        emojiLabel.text = tracker.emoji
-        let daysString = String.localizedStringWithFormat(NSLocalizedString("numberOfDays", comment: "Number of remaining days"), daysCount)
-        daysCountLabel.text = String.localizedStringWithFormat(NSLocalizedString("daysCount", comment: ""), daysCount, daysString)
-        changeStatus(isDone: status)
+    private func addPinImageView() {
+        pinImageView = UIImageView(image: UIImage(named: "pin"))
+        guard let pinImageView = pinImageView  else {
+            return
+        }
+        contentView.addSubview(pinImageView)
+        pinImageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pinImageView.heightAnchor.constraint(equalToConstant: 24),
+            pinImageView.widthAnchor.constraint(equalToConstant: 24),
+            pinImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            pinImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4)
+        ])
     }
 }

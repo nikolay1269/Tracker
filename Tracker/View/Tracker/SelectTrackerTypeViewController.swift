@@ -70,15 +70,16 @@ class SelectTrackerTypeViewController: UIViewController {
     
     @objc private func trackerTypeButtonTapped(sender: UIButton) {
         
-        let createHabitViewController = CreateTrackerViewController()
+        let createTrackerViewController = CreateTrackerViewController()
         
         if sender.tag == TrackerType.habit.rawValue {
-            createHabitViewController.trackerType = .habit
+            createTrackerViewController.trackerType = .habit
         } else if sender.tag == TrackerType.event.rawValue {
-            createHabitViewController.trackerType = .event
+            createTrackerViewController.trackerType = .event
         }
         
-        createHabitViewController.trackerCreated = { [weak self] newTracker, trackerCategory in
+        createTrackerViewController.mode = .new
+        createTrackerViewController.trackerCreated = { [weak self] newTracker, trackerCategory in
             
             guard let self = self else { return }
             self.newTracker = newTracker
@@ -87,6 +88,6 @@ class SelectTrackerTypeViewController: UIViewController {
             trackerCreated(newTracker, trackerCategory)
             self.dismiss(animated: false)
         }
-        self.present(createHabitViewController, animated: true)
+        self.present(createTrackerViewController, animated: true)
     }
 }

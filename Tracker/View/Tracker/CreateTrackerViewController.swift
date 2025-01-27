@@ -22,6 +22,11 @@ enum TrackerParamsCollectionView: Int {
     case color
 }
 
+enum ScreenMode {
+    case new
+    case edit
+}
+
 class CreateTrackerViewController: UIViewController {
     
     // MARK: - IB Outlets
@@ -40,6 +45,9 @@ class CreateTrackerViewController: UIViewController {
     var trackerCreated: ((Tracker, TrackerCategory) -> Void)?
     var trackerType: TrackerType?
     var selectedTrackerCategory: TrackerCategory?
+    var mode: ScreenMode?
+    var currentTracker: Tracker?
+    var daysCount: Int?
     
     // MARK: - Private Properties
     private let nameMaxLength = 38
@@ -73,9 +81,64 @@ class CreateTrackerViewController: UIViewController {
         addCancelButton()
         addParamsTalbeView()
         addParamsCollectionView()
+        handleEditMode()
+        addDaysCountLabel()
     }
     
     // MARK: - Private Methods
+    private func handleEditMode() {
+        if mode == .edit {
+            paramsTableView.performBatchUpdates({}, completion: { [weak self] isComplete in
+                guard let self = self else { return }
+                if isComplete {
+                    self.configureCategoryForCurrentTracker()
+                    if (self.trackerType == .habit) {
+                        self.configureScheduleForCurrentyTracker()
+                    }
+                }
+            })
+            trackerParamsCollectionView?.performBatchUpdates({}, completion: { [weak self] isComplete in
+                guard let self = self else { return }
+                if isComplete {
+                    self.configureEmojiForCurrentyTracker()
+                    self.configureColorForCurrentyTracker()
+                }
+            })
+        }
+    }
+    
+    private func configureEmojiForCurrentyTracker() {
+        nameTextField.text = currentTracker?.name
+        if let emojiRowIndex = emojies.firstIndex(of: currentTracker?.emoji ?? "") {
+            let emojiIndexPath = IndexPath(row: emojiRowIndex, section: 0)
+            trackerParamsCollectionView?.selectItem(at: emojiIndexPath, animated: false, scrollPosition: .bottom)
+            if let trackerParamsCollectionView = trackerParamsCollectionView {
+                collectionView(trackerParamsCollectionView, didSelectItemAt: emojiIndexPath)
+            }
+        }
+    }
+    
+    private func configureColorForCurrentyTracker() {
+        if let currentColor = currentTracker?.color, let colorIndex = colors.firstIndex(where: { UIColor.hexFromColor(color: $0 ?? .black) == UIColor.hexFromColor(color: currentColor) }) {
+            let colorIndexPath = IndexPath(row: colorIndex, section: 1)
+            trackerParamsCollectionView?.selectItem(at: colorIndexPath, animated: false, scrollPosition: .bottom)
+            if let trackerParamsCollectionView = trackerParamsCollectionView {
+                collectionView(trackerParamsCollectionView, didSelectItemAt: colorIndexPath)
+            }
+        }
+    }
+    
+    private func configureScheduleForCurrentyTracker() {
+        let scheduleCell = paramsTableView.cellForRow(at: IndexPath(row: 1, section: 0))
+        scheduleCell?.detailTextLabel?.text = getScheduleInfo(dayOfWeekSelected: currentTracker?.schedule ?? Set<WeekDay>())
+    }
+    
+    private func configureCategoryForCurrentTracker() {
+        let categoryIndexPath = IndexPath(row: 0, section: 0)
+        let cell = paramsTableView.cellForRow(at: categoryIndexPath)
+        cell?.detailTextLabel?.text = selectedTrackerCategory?.name
+    }
+    
     private func addParamsCollectionView() {
         let layout = UICollectionViewFlowLayout()
         trackerParamsCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -103,9 +166,23 @@ class CreateTrackerViewController: UIViewController {
         titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         switch(trackerType) {
         case .habit:
-            titleLabel.text = NSLocalizedString("New habit", comment: "Title of new tracker screen")
+            switch(mode) {
+            case .new:
+                titleLabel.text = NSLocalizedString("New habit", comment: "Title of new tracker screen")
+            case .edit:
+                titleLabel.text = NSLocalizedString("Edit habit", comment: "Title of edit tracker screen")
+            case .none:
+                break
+            }
         case .event:
-            titleLabel.text = NSLocalizedString("New event", comment: "Title of new tracker screen")
+            switch(mode) {
+            case .new:
+                titleLabel.text = NSLocalizedString("New event", comment: "Title of new tracker screen")
+            case .edit:
+                titleLabel.text = NSLocalizedString("Edit event", comment: "Title of edit tracker screen")
+            case .none:
+                break
+            }
         case .none:
             break
         }
@@ -131,7 +208,9 @@ class CreateTrackerViewController: UIViewController {
         nameStackView.spacing = 8
         nameStackView.distribution = .fillProportionally
         nameStackView.axis = .vertical
-        nameStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24).isActive = true
+        if mode == .new {
+            nameStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24).isActive = true
+        }
         nameStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         nameStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
         nameStackView.isUserInteractionEnabled = true
@@ -184,7 +263,15 @@ class CreateTrackerViewController: UIViewController {
         let font = UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 17)
         let color = UIColor(named: "YPWhite") ?? UIColor.black
         let attributes = [NSAttributedString.Key.font : font, NSAttributedString.Key.foregroundColor : color]
-        let attributedTitle = NSAttributedString(string: NSLocalizedString("Create", comment: "Create button title"), attributes: attributes)
+        var attributedTitle = NSAttributedString()
+        switch mode {
+        case .new:
+            attributedTitle = NSAttributedString(string: NSLocalizedString("Create", comment: "Create button title"), attributes: attributes)
+        case .edit:
+            attributedTitle = NSAttributedString(string: NSLocalizedString("Save", comment: "Save button title"), attributes: attributes)
+        case .none:
+            break
+        }
         createButton.setAttributedTitle(attributedTitle, for: .normal)
         createButton.layer.cornerRadius = 16
         createButton.backgroundColor = UIColor(named: "YPGray")
@@ -250,6 +337,25 @@ class CreateTrackerViewController: UIViewController {
         paramsTableView.reloadData()
     }
     
+    private func addDaysCountLabel() {
+        if mode == .edit {
+            let daysCountLabel = UILabel()
+            daysCountLabel.translatesAutoresizingMaskIntoConstraints = false
+            let daysString = String.localizedStringWithFormat(NSLocalizedString("numberOfDays", comment: "Number of remaining days"), daysCount ?? 0)
+            daysCountLabel.text = String.localizedStringWithFormat(NSLocalizedString("daysCount", comment: "Correct form of word 'day'"), daysCount ?? 0, daysString)
+            daysCountLabel.font = UIFont(name: "SF Pro Bold", size: 32)
+            daysCountLabel.textColor = UIColor(named: "YPBlack")
+            daysCountLabel.textAlignment = .center
+            view.addSubview(daysCountLabel)
+            NSLayoutConstraint.activate([
+                daysCountLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
+                daysCountLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                daysCountLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+                daysCountLabel.bottomAnchor.constraint(equalTo: nameStackView.topAnchor, constant: -40)
+            ])
+        }
+    }
+    
     // MARK: - IB Actions
     @objc private func nameTextFieldEditingChanged() {
         checkMaxLenght()
@@ -259,7 +365,24 @@ class CreateTrackerViewController: UIViewController {
     @objc private func createButtonTapped() {
         guard let trackerCreated = trackerCreated, let selectedTrackerCategory = selectedTrackerCategory else { return }
         dismiss(animated: true)
-        trackerCreated(createTracker(), selectedTrackerCategory)
+        switch (mode) {
+        case .new:
+            trackerCreated(createTracker(), selectedTrackerCategory)
+        case .edit:
+            if var currentTracker = currentTracker {
+                if let currentColor = colors[lastSelectedColorIndexPath?.row ?? 0] {
+                let currentEmoji = emojies[lastSelectedEmojiIndexPath?.row ?? 0]
+                    currentTracker = Tracker(id: currentTracker.id,
+                                             name: nameTextField.text ?? "",
+                                             color: currentColor,
+                                             emoji: currentEmoji, schedule: dayOfWeekSelected)
+                    
+                    trackerCreated(currentTracker, selectedTrackerCategory)
+                }
+            }
+        case .none:
+            break
+        }
     }
     
     @objc private func cancelButtonTapped() {
@@ -318,6 +441,7 @@ extension CreateTrackerViewController: UITableViewDelegate {
             let trackerCategoriesViewController = TrackerCategoriesViewController()
             let viewModel = TrackerCategoriesViewModel()
             trackerCategoriesViewController.viewModel = viewModel
+            trackerCategoriesViewController.selectedCategory = selectedTrackerCategory
             trackerCategoriesViewController.viewModel?.onTrackerCategorySelected = { [weak self] trackerCategoryViewModel in
                 guard let self = self,
                       let id = trackerCategoryViewModel?.id,
@@ -335,36 +459,13 @@ extension CreateTrackerViewController: UITableViewDelegate {
             self.present(trackerCategoriesViewController, animated: true)
         case TrackerParamsTableView.schedule.rawValue:
             let scheduleViewController = ScheduleViewController()
+            scheduleViewController.dayOfWeekSelected = currentTracker?.schedule ?? Set<WeekDay>()
             scheduleViewController.scheduleSelected = { [weak self] dayOfWeekSelected in
                 guard let self = self else { return }
-                var scheduleInfo: String = ""
-                for dayOfWeek in dayOfWeekSelected.sorted(by: { weekday1, weekday2 in
-                    (weekday1.rawValue < weekday2.rawValue || weekday2 == .sunday) && !(weekday1 == .sunday)
-                }) {
-                    var shortDayOfWeek = ""
-                    switch(dayOfWeek) {
-                    case .monday:
-                        shortDayOfWeek = NSLocalizedString("Mo", comment: "Short day of week")
-                    case .tuesday:
-                        shortDayOfWeek = NSLocalizedString("Tu", comment: "Short day of week")
-                    case .wednesday:
-                        shortDayOfWeek = NSLocalizedString("We", comment: "Short day of week")
-                    case .thursday:
-                        shortDayOfWeek = NSLocalizedString("Th", comment: "Short day of week")
-                    case .friday:
-                        shortDayOfWeek = NSLocalizedString("Fr", comment: "Short day of week")
-                    case .saturday:
-                        shortDayOfWeek = NSLocalizedString("Sa", comment: "Short day of week")
-                    case .sunday:
-                        shortDayOfWeek = NSLocalizedString("Su", comment: "Short day of week")
-                    }
-                    scheduleInfo.append("\(shortDayOfWeek), ")
-                }
-                if scheduleInfo.count > 1 {
-                    scheduleInfo.removeLast(2)
-                }
-                self.dayOfWeekSelected = dayOfWeekSelected
+                
                 guard let cell = tableView.cellForRow(at: IndexPath(row: TrackerParamsTableView.schedule.rawValue, section: 0)) else { return }
+                let scheduleInfo: String = self.getScheduleInfo(dayOfWeekSelected: dayOfWeekSelected)
+                self.dayOfWeekSelected = dayOfWeekSelected
                 cell.detailTextLabel?.text = scheduleInfo
                 self.setCreateButtonEnabled()
             }
@@ -372,6 +473,37 @@ extension CreateTrackerViewController: UITableViewDelegate {
         default:
             break
         }
+    }
+    
+    private func getScheduleInfo(dayOfWeekSelected: Set<WeekDay>) -> String {
+        var scheduleInfo: String = ""
+        for dayOfWeek in dayOfWeekSelected.sorted(by: { weekday1, weekday2 in
+            (weekday1.rawValue < weekday2.rawValue || weekday2 == .sunday) && !(weekday1 == .sunday)
+        }) {
+            var shortDayOfWeek = ""
+            switch(dayOfWeek) {
+            case .monday:
+                shortDayOfWeek = NSLocalizedString("Mo", comment: "Short day of week")
+            case .tuesday:
+                shortDayOfWeek = NSLocalizedString("Tu", comment: "Short day of week")
+            case .wednesday:
+                shortDayOfWeek = NSLocalizedString("We", comment: "Short day of week")
+            case .thursday:
+                shortDayOfWeek = NSLocalizedString("Th", comment: "Short day of week")
+            case .friday:
+                shortDayOfWeek = NSLocalizedString("Fr", comment: "Short day of week")
+            case .saturday:
+                shortDayOfWeek = NSLocalizedString("Sa", comment: "Short day of week")
+            case .sunday:
+                shortDayOfWeek = NSLocalizedString("Su", comment: "Short day of week")
+            }
+            scheduleInfo.append("\(shortDayOfWeek), ")
+        }
+        if scheduleInfo.count > 1 {
+            scheduleInfo.removeLast(2)
+        }
+        self.dayOfWeekSelected = dayOfWeekSelected
+        return scheduleInfo
     }
 }
 
@@ -417,12 +549,18 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: colorCellIdenfifier, for: indexPath) as? ColorCollectionViewCell,
                     let color = colors[indexPath.row] else { return UICollectionViewCell() }
             cell.configureCell(color: color)
+            if indexPath == lastSelectedColorIndexPath {
+                cell.setSelectedStatus(selected: true)
+            }
             return cell
         case .emoji:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: emojiCellIdentifier, for: indexPath) as? EmojiCollectionViewCell else { return
                 UICollectionViewCell()
             }
             cell.configureCell(emoji: emojies[indexPath.row])
+            if indexPath == lastSelectedEmojiIndexPath {
+                cell.setSelectedStatus(selected: true)
+            }
             return cell
         case .none:
             let cell = UICollectionViewCell()

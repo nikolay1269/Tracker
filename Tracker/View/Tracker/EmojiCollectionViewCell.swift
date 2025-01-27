@@ -22,6 +22,12 @@ class EmojiCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - View Life Cycles
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        setSelectedStatus(selected: false)
+    }
+    
     // MARK: - Public Methods
     func configureCell(emoji: String) {
         emojiLabel.text = emoji

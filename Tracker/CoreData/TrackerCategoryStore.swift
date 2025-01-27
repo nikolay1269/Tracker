@@ -20,6 +20,7 @@ protocol TrackerCategoryStoreProtocol {
     func allTrackerCategories() -> [TrackerCategory]
     func titleForSection(_ section: Int) -> String
     func category(at: IndexPath) -> TrackerCategory?
+    func filteredCategory(at: IndexPath) -> TrackerCategory?
     func addRecord(_ record: TrackerCategory) throws
     func numbersOfFilteredTrackersInSection(_ section: Int) -> Int
     func filteredTracker(at: IndexPath) throws -> Tracker?
@@ -161,6 +162,12 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         } else {
             return nil
         }
+    }
+    
+    func filteredCategory(at: IndexPath) -> TrackerCategory? {
+        let filteredCategories = filteredTrackerCategoriesCoreData()
+        let categoryCoreData = filteredCategories[at.section]
+        return try? trackerCategoryFromCoreDataObject(categoryCoreData)
     }
     
     func addRecord(_ record: TrackerCategory) throws {
