@@ -92,7 +92,10 @@ class TrackerCategoriesViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(trackerCategoriesTableView)
         view.addSubview(trackerCategoriesLabel)
-        emptyView = EmptyView(rootView: view, parentView: trackerCategoriesTableView, text: NSLocalizedString("Habits and events can be combined by meaning", comment: "Empty categories screen text"))
+        emptyView = EmptyView(rootView: view,
+                              parentView: trackerCategoriesTableView,
+                              text: NSLocalizedString("Habits and events can be combined by meaning", comment: "Empty categories screen text"),
+                              imageName: "TrackersEmptyScreen")
         view.addSubview(addCategoryButton)
         NSLayoutConstraint.activate([
             trackerCategoriesTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),

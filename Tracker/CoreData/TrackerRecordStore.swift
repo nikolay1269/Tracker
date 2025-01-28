@@ -13,6 +13,7 @@ protocol TrackerRecordStoreProtocol {
     func addRecordForTracker(_ tracker: Tracker, date: Date)
     func removeRecordForTracker(_ tracker: Tracker, date: Date)
     func trackerCompletedCount(_ tracker: Tracker) -> Int
+    func numberOfCompletedTrackers() -> Int
 }
 
 final class TrackerRecordStore {
@@ -86,5 +87,21 @@ extension TrackerRecordStore: TrackerRecordStoreProtocol {
         } else {
             return []
         }
+    }
+    
+    func numberOfCompletedTrackers() -> Int {
+        let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        var result: [TrackerCoreData] = []
+        do {
+            let trackers = try context.fetch(fetchRequest)
+            for tracker in trackers {
+                if tracker.records?.count ?? 0 > 0 {
+                    result.append(tracker)
+                }
+            }
+        } catch {
+            print(error)
+        }
+        return result.count
     }
 }

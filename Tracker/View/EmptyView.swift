@@ -9,7 +9,7 @@ import UIKit
 
 class EmptyView: UIView {
 
-    init(rootView: UIView, parentView: UIView, text: String) {
+    init(rootView: UIView, parentView: UIView, text: String, imageName: String) {
         super.init(frame: .zero)
         
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -18,7 +18,7 @@ class EmptyView: UIView {
         self.trailingAnchor.constraint(equalTo: parentView.trailingAnchor).isActive = true
         self.topAnchor.constraint(equalTo: parentView.topAnchor).isActive = true
         self.bottomAnchor.constraint(equalTo: parentView.bottomAnchor).isActive = true
-        let imageView = UIImageView(image: UIImage(named: "TrackersEmptyScreen"))
+        let imageView = UIImageView(image: UIImage(named: imageName))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
         imageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
