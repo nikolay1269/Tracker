@@ -51,6 +51,7 @@
 		F3DF95002D0069F10060DD1E /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DF94FF2D0069F10060DD1E /* Tracker.swift */; };
 		F3DF95022D006B0F0060DD1E /* TrackerCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DF95012D006B0F0060DD1E /* TrackerCategory.swift */; };
 		F3DF95042D006B5B0060DD1E /* TrackerRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DF95032D006B5B0060DD1E /* TrackerRecord.swift */; };
+		F3EC8D1D2D480662005126D9 /* FiltersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EC8D1C2D480662005126D9 /* FiltersViewController.swift */; };
 		F3EE84382D3E198B008C2618 /* Binding.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EE84372D3E198B008C2618 /* Binding.swift */; };
 /* End PBXBuildFile section */
 
@@ -104,6 +105,7 @@
 		F3DF94FF2D0069F10060DD1E /* Tracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracker.swift; sourceTree = "<group>"; };
 		F3DF95012D006B0F0060DD1E /* TrackerCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCategory.swift; sourceTree = "<group>"; };
 		F3DF95032D006B5B0060DD1E /* TrackerRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecord.swift; sourceTree = "<group>"; };
+		F3EC8D1C2D480662005126D9 /* FiltersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersViewController.swift; sourceTree = "<group>"; };
 		F3EE84372D3E198B008C2618 /* Binding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Binding.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -261,6 +263,7 @@
 		F3D3D8F12D3BB959007BCD1A /* View */ = {
 			isa = PBXGroup;
 			children = (
+				F3EC8D1B2D48064E005126D9 /* Filters */,
 				F3D3D8EF2D3BB6C2007BCD1A /* Category */,
 				F38ACA9C2CFB3D4A009A9753 /* Statistics */,
 				F375D9E62CF87C8800D19B7F /* Trackers */,
@@ -297,6 +300,14 @@
 				F31952122CF5AA0C009F3D77 /* SplashViewController.swift */,
 			);
 			path = Splash;
+			sourceTree = "<group>";
+		};
+		F3EC8D1B2D48064E005126D9 /* Filters */ = {
+			isa = PBXGroup;
+			children = (
+				F3EC8D1C2D480662005126D9 /* FiltersViewController.swift */,
+			);
+			path = Filters;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -394,6 +405,7 @@
 				F36A489E2D0976C4008DBDD6 /* SupplementaryView.swift in Sources */,
 				F342D6C32D31052B00572BA7 /* TrackerCategoryCoreData+CoreDataProperties.swift in Sources */,
 				F381ED5D2D3532E90074455F /* TrackerRecordCoreData+CoreDataClass.swift in Sources */,
+				F3EC8D1D2D480662005126D9 /* FiltersViewController.swift in Sources */,
 				F3DF95042D006B5B0060DD1E /* TrackerRecord.swift in Sources */,
 				F39FFE882D10551400503140 /* CreateTrackerViewController.swift in Sources */,
 				F39C8D2B2D3CFE3500B89486 /* TrackerCategoryTableViewCell.swift in Sources */,

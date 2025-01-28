@@ -26,6 +26,7 @@ protocol TrackerCategoryStoreProtocol {
     func filteredTracker(at: IndexPath) throws -> Tracker?
     func setCurrentDate(date: Date)
     func setSearchText(text: String)
+    func setCurrentFilter(filter: TrackerFilter)
     func numberOfItems() -> Int
 }
 
@@ -38,6 +39,7 @@ final class TrackerCategoryStore: NSObject {
     // MARK: - Public Properties
     var currentDate: Date
     var searchText: String?
+    var currentFilter = TrackerFilter.all
     
     // MARK: - Private Properties
     private var context: NSManagedObjectContext
@@ -117,13 +119,21 @@ final class TrackerCategoryStore: NSObject {
             let name = trackerCoreData?.name?.lowercased() ?? ""
             let searchText = searchText?.lowercased() ?? ""
             return (isTrackerForWeekDay(currentDayOfWeek, weekDayInt: trackerCoreData?.schedule ?? 0) ||
-            (trackerCoreData?.schedule == 0 &&
-             (trackerCoreData?.records?.count == 0 || trackerCoreData?.records?.filter({ record in
-                let trackerRerordCoreData = record as! TrackerRecordCoreData
-                return trackerRerordCoreData.date?.scheduleComparison(date: currentDate) == .orderedSame
-            }).count ?? 0 > 0))) && (name.contains(searchText) || searchText.isEmpty) && !(trackerCoreData?.isPinned ?? false && filterPinned)
+                    (trackerCoreData?.schedule == 0 &&
+                     (!isTrackerCompeleted(trackerCoreData) || trackerCoreData?.records?.filter({ record in
+                let trackerRerordCoreData = record as? TrackerRecordCoreData
+                return trackerRerordCoreData?.date?.scheduleComparison(date: currentDate) == .orderedSame
+            }).count ?? 0 > 0))) &&
+            (name.contains(searchText) || searchText.isEmpty) &&
+            !(trackerCoreData?.isPinned ?? false && filterPinned) &&
+            (isTrackerCompeleted(trackerCoreData) || currentFilter != .completed) &&
+            (!isTrackerCompeleted(trackerCoreData) || currentFilter != .notcompleted)
         }) as? [TrackerCoreData] ?? []
         return filteredTrackers
+    }
+    
+    private func isTrackerCompeleted(_ trackerCoreData: TrackerCoreData?) -> Bool {
+        return trackerCoreData?.records?.count ?? 0 > 0
     }
 }
 
@@ -266,6 +276,10 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
     
     func setSearchText(text: String) {
         self.searchText = text
+    }
+    
+    func setCurrentFilter(filter: TrackerFilter) {
+        currentFilter = filter
     }
     
     func numberOfItems() -> Int {

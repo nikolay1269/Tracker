@@ -28,7 +28,7 @@ class TrackerCategoriesViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = NSLocalizedString("Category", comment: "Categories screen title")
-        label.font = UIFont(name: "SF Pro Regular", size: 16)
+        label.font = UIFont(name: "SF Pro Medium", size: 16)
         return label
     }()
     

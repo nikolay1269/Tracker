@@ -16,11 +16,14 @@ final class TrackersViewController: UIViewController {
     private var collectionView: UICollectionView?
     private var emptyView: UIView?
     private var searchTextField: UISearchTextField?
+    private var filterButton: UIButton?
+    private var datePicker: UIDatePicker?
     
     // MARK: - Private Properties
     private let cellIdentifier = "trackCellIdentifier"
     private let headerIdentifier = "headerIdentifier"
     private var currentDate: Date = Date()
+    private var currentFilter: TrackerFilter = .all
     private lazy var trackerStore: TrackerStoreProtocol? = {
         let context = CoreDataManager.shared.context
         let trackerStore = TrackerStore(context: context)
@@ -44,6 +47,7 @@ final class TrackersViewController: UIViewController {
         addLeftNavigationBarItem()
         addTrackersLabel()
         addSearchTextField()
+        addFilterButton()
         addCollectionView()
         addEmptyView()
         addDateTimePicker()
@@ -53,12 +57,41 @@ final class TrackersViewController: UIViewController {
     }
     
     // MARK: - IB Actions
+    @objc private func filtersButtonTapped() {
+        let filtersViewController = FiltersViewController()
+        filtersViewController.currentFilter = currentFilter
+        filtersViewController.filterSelected = { [weak self] filter in
+            guard let self = self else { return }
+            self.currentFilter = filter
+            self.trackerCategoryStore?.setCurrentFilter(filter: filter)
+            switch(filter) {
+            case .all:
+                print("Filter selected")
+            case .today:
+                self.currentFilter = .all
+                self.currentDate = Date()
+                self.datePicker?.setDate(self.currentDate, animated: true)
+                self.handleCurrentDate()
+            case .completed:
+                print("Filter selected")
+            case .notcompleted:
+                print("Filter selected")
+            }
+            self.collectionView?.reloadData()
+            let state = self.trackerCategoryStore?.numberOfItems() ?? 0 == 0
+            self.changeEmptyViewVisibility(state)
+        }
+        present(filtersViewController, animated: true)
+    }
+    
     @objc private func plusButtonTapped() {
         let selectTrackerTypeViewController = SelectTrackerTypeViewController()
         selectTrackerTypeViewController.trackerCreated = { [weak self] newTracker, trackerCategory in
             
             guard let self = self else { return }
             self.addNewTracker(tracker: newTracker, trackerCategory: trackerCategory)
+            let itemsNumber = self.trackerCategoryStore?.numberOfItems() ?? 0
+            self.changeFilterButtonVisibility(itemsNumber > 0)
             self.collectionView?.reloadData()
         }
         self.present(selectTrackerTypeViewController, animated: true)
@@ -66,10 +99,7 @@ final class TrackersViewController: UIViewController {
     
     @objc private func datePickerValueChange(_ sender: UIDatePicker) {
         currentDate = sender.date
-        trackerCategoryStore?.setCurrentDate(date: currentDate)
-        let itemsNumber = trackerCategoryStore?.numberOfItems() ?? 0
-        changeEmptyViewVisibility(itemsNumber == 0)
-        collectionView?.reloadData()
+        handleCurrentDate()
     }
     
     @objc private func searchTextFieldValueChanged() {
@@ -78,6 +108,33 @@ final class TrackersViewController: UIViewController {
     }
     
     // MARK: - Private Methods
+    private func handleCurrentDate() {
+        trackerCategoryStore?.setCurrentDate(date: currentDate)
+        let itemsNumber = trackerCategoryStore?.numberOfItems() ?? 0
+        changeEmptyViewVisibility(itemsNumber == 0)
+        changeFilterButtonVisibility(itemsNumber > 0)
+        collectionView?.reloadData()
+    }
+    
+    private func addFilterButton() {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(button)
+        let font = UIFont(name: "SF Pro Medium", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.font : font,
+                                                          NSAttributedString.Key.foregroundColor : UIColor.white]
+        let attributedTitle = NSAttributedString(string: NSLocalizedString("Filters", comment: "Filters button title"), attributes: attributes)
+        button.setAttributedTitle(attributedTitle, for: .normal)
+        button.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
+        button.backgroundColor = UIColor(named: "YPBlue")
+        button.layer.cornerRadius = 16
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        button.widthAnchor.constraint(equalToConstant: 114).isActive = true
+        button.addTarget(self, action: #selector(filtersButtonTapped), for: .touchUpInside)
+        filterButton = button
+    }
+    
     private func addLeftNavigationBarItem() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped))
         navigationItem.leftBarButtonItem?.tintColor = .black
@@ -125,6 +182,7 @@ final class TrackersViewController: UIViewController {
         datePicker.maximumDate = maxDate
         datePicker.addTarget(self, action: #selector(datePickerValueChange(_:)), for: .valueChanged)
         datePicker.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        self.datePicker = datePicker
     }
     
     private func addTrackersLabel() {
@@ -173,7 +231,9 @@ final class TrackersViewController: UIViewController {
         if let searchTextField = searchTextField {
             collectionView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 5).isActive = true
         }
-        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        if let filterButton = filterButton {
+            collectionView.bottomAnchor.constraint(equalTo: filterButton.topAnchor).isActive = true
+        }
         collectionView.dataSource = self
         collectionView.delegate = self
         self.collectionView = collectionView
@@ -210,6 +270,10 @@ final class TrackersViewController: UIViewController {
     
     private func changeEmptyViewVisibility(_ visible: Bool) {
         emptyView?.isHidden = !visible
+    }
+    
+    private func changeFilterButtonVisibility(_ visible: Bool) {
+        filterButton?.isHidden = !visible
     }
 }
 
@@ -351,8 +415,11 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
                 let alert = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
                 let deleteTitle = NSLocalizedString("Delete", comment: "")
                 alert.addAction(UIAlertAction(title: deleteTitle, style: .destructive , handler: { [weak self] (UIAlertAction) in
-                        self?.deleteTracker(tracker: tracker)
-                    }))
+                    guard let self = self else { return }
+                    self.deleteTracker(tracker: tracker)
+                    let itemsNumber = self.trackerCategoryStore?.numberOfItems() ?? 0
+                    self.changeFilterButtonVisibility(itemsNumber > 0)
+                }))
                 let cancelTitle = NSLocalizedString("Cancel", comment: "")
                 alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel , handler: { (UIAlertAction) in
                     alert.dismiss(animated: true)

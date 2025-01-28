@@ -16,7 +16,7 @@ class CreateTrackerCategoryViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = NSLocalizedString("New category", comment: "New category screen title")
-        label.font = UIFont(name: "SF Pro Regular", size: 16)
+        label.font = UIFont(name: "SF Pro Medium", size: 16)
         return label
     }()
     
