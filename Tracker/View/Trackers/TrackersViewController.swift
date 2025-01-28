@@ -288,7 +288,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         
         guard let firstIndexPath = indexPaths.first,
-              let tracker = try? trackerCategoryStore?.filteredTracker(at: firstIndexPath),
+              var tracker = try? trackerCategoryStore?.filteredTracker(at: firstIndexPath),
               let category = trackerCategoryStore?.filteredCategory(at: firstIndexPath)
         else
         {
@@ -298,13 +298,29 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         let contextMenuConfiguration = UIContextMenuConfiguration(identifier: nil, previewProvider: { [weak self] in self?.makePreview(indexPath: firstIndexPath) }) { (action) -> UIMenu? in
             
             let pinTitle = NSLocalizedString("Pin", comment: "Tracker context pin menu item")
-            let pin = UIAction(title: pinTitle) { _ in
-                //TODO: move tracker to "Pin" cateogry
+            let pin = UIAction(title: pinTitle) { [weak self] _ in
+                guard let self = self else { return }
+                tracker = Tracker(id: tracker.id,
+                                  name: tracker.name,
+                                  color: tracker.color,
+                                  emoji: tracker.emoji,
+                                  schedule: tracker.schedule,
+                                  isPinned: true)
+                self.updateTracker(tracker: tracker, trackerCategory: category)
+                self.collectionView?.reloadData()
             }
                 
             let unpinTitle = NSLocalizedString("Unpin", comment: "Tracker context unpin menu item")
-            let unpin = UIAction(title: unpinTitle) { _ in
-                //TODO: move tracker from "Pin" category to it's navite category
+            let unpin = UIAction(title: unpinTitle) { [weak self] _ in
+                guard let self = self else { return }
+                tracker = Tracker(id: tracker.id,
+                                  name: tracker.name,
+                                  color: tracker.color,
+                                  emoji: tracker.emoji,
+                                  schedule: tracker.schedule,
+                                  isPinned: false)
+                self.updateTracker(tracker: tracker, trackerCategory: category)
+                self.collectionView?.reloadData()
             }
                 
             let editTitle = NSLocalizedString("Edit", comment: "Tracker context edit menu item")
@@ -344,9 +360,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
                 self?.present(alert, animated: true)
             }
             
-            //TODO: Get track by Index Path and select which menu item should be added
-            let isPin = true
-            if isPin {
+            if !tracker.isPinned {
                 return UIMenu(options: UIMenu.Options.displayInline, children: [pin, edit, delete])
             } else {
                 return UIMenu(options: UIMenu.Options.displayInline, children: [unpin, edit, delete])

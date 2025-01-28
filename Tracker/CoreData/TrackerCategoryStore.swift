@@ -82,7 +82,7 @@ final class TrackerCategoryStore: NSObject {
         return result
     }
     
-    private func filteredTrackerCategoriesCoreData() -> [TrackerCategoryCoreData] {
+    private func filteredTrackerCategoriesCoreData(filterPinned: Bool = true) -> [TrackerCategoryCoreData] {
         
         var result: [TrackerCategoryCoreData] = []
         guard let fethedObjects = fetchedResultController.fetchedObjects else {
@@ -90,7 +90,7 @@ final class TrackerCategoryStore: NSObject {
         }
         
         for trackerCategoryCoreData in fethedObjects {
-            let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
+            let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData, filterPinned: filterPinned)
             if filteredTrackers.count > 0 {
                 result.append(trackerCategoryCoreData)
             }
@@ -109,20 +109,20 @@ final class TrackerCategoryStore: NSObject {
         return weekDayInt & weekDay.value > 0
     }
     
-    private func filteredTrackersForCategory(_ category: TrackerCategoryCoreData) -> [TrackerCoreData] {
+    private func filteredTrackersForCategory(_ category: TrackerCategoryCoreData, filterPinned: Bool = true) -> [TrackerCoreData] {
         
         guard let currentDayOfWeekInt = Calendar.current.dateComponents([.weekday], from: currentDate).weekday, let currentDayOfWeek = WeekDay(rawValue: currentDayOfWeekInt) else { return [] }
         let filteredTrackers: [TrackerCoreData] = category.trackers?.allObjects.filter({ tcd in
-            let trackerCoreData = tcd as! TrackerCoreData
-            let name = trackerCoreData.name?.lowercased() ?? ""
+            let trackerCoreData = tcd as? TrackerCoreData
+            let name = trackerCoreData?.name?.lowercased() ?? ""
             let searchText = searchText?.lowercased() ?? ""
-            return (isTrackerForWeekDay(currentDayOfWeek, weekDayInt: trackerCoreData.schedule) ||
-            (trackerCoreData.schedule == 0 &&
-             (trackerCoreData.records?.count == 0 || trackerCoreData.records?.filter({ record in
+            return (isTrackerForWeekDay(currentDayOfWeek, weekDayInt: trackerCoreData?.schedule ?? 0) ||
+            (trackerCoreData?.schedule == 0 &&
+             (trackerCoreData?.records?.count == 0 || trackerCoreData?.records?.filter({ record in
                 let trackerRerordCoreData = record as! TrackerRecordCoreData
                 return trackerRerordCoreData.date?.scheduleComparison(date: currentDate) == .orderedSame
-            }).count ?? 0 > 0))) && (name.contains(searchText) || searchText.isEmpty)
-        }) as! [TrackerCoreData]
+            }).count ?? 0 > 0))) && (name.contains(searchText) || searchText.isEmpty) && !(trackerCoreData?.isPinned ?? false && filterPinned)
+        }) as? [TrackerCoreData] ?? []
         return filteredTrackers
     }
 }
@@ -131,7 +131,7 @@ final class TrackerCategoryStore: NSObject {
 extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
     
     var numberOfSections: Int {
-        filteredTrackerCategoriesCoreData().count
+        filteredTrackerCategoriesCoreData().count + (pinnedTrackersCoreData().count > 0 ? 1 : 0)
     }
     
     func numberOfCategories() -> Int {
@@ -153,7 +153,15 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
     
     func titleForSection(_ section: Int) -> String {
         let filteredTrackerCategories = filteredTrackerCategoriesCoreData()
-        return filteredTrackerCategories[section].name ?? ""
+        if pinnedTrackersCoreData().count > 0 {
+            if section == 0 {
+                return "Закрепленные"
+            } else {
+                return filteredTrackerCategories[section - 1].name ?? ""
+            }
+        } else {
+            return filteredTrackerCategories[section].name ?? ""
+        }
     }
     
     func category(at: IndexPath) -> TrackerCategory? {
@@ -165,8 +173,23 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
     }
     
     func filteredCategory(at: IndexPath) -> TrackerCategory? {
+        let pinnedTrackers = pinnedTrackersCoreData()
         let filteredCategories = filteredTrackerCategoriesCoreData()
-        let categoryCoreData = filteredCategories[at.section]
+        var categoryCoreData: TrackerCategoryCoreData
+        if pinnedTrackers.count > 0 {
+            if at.section == 0 {
+                let trackerCoreDataObject = pinnedTrackers[at.row]
+                if let category = trackerCoreDataObject.category {
+                    return try? trackerCategoryFromCoreDataObject(category)
+                } else {
+                    return nil
+                }
+            } else {
+                categoryCoreData = filteredCategories[at.section - 1]
+            }
+        } else {
+            categoryCoreData = filteredCategories[at.section]
+        }
         return try? trackerCategoryFromCoreDataObject(categoryCoreData)
     }
     
@@ -178,20 +201,43 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
     }
     
     func numbersOfFilteredTrackersInSection(_ section: Int) -> Int {
+        let pinnedTrackers = pinnedTrackersCoreData()
         let filteredTrackerCategies = filteredTrackerCategoriesCoreData()
-        let trackerCategoryCoreData = filteredTrackerCategies[section]
-        let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
-        return filteredTrackers.count
+        if pinnedTrackers.count > 0 {
+            if section == 0 {
+                return pinnedTrackers.count
+            } else {
+                let trackerCategoryCoreData = filteredTrackerCategies[section - 1]
+                let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
+                return filteredTrackers.count
+            }
+        } else {
+            let trackerCategoryCoreData = filteredTrackerCategies[section]
+            let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
+            return filteredTrackers.count
+        }
     }
     
     func filteredTracker(at: IndexPath) throws -> Tracker? {
+        let pinnedTrackers = pinnedTrackersCoreData()
         let filteredTrackerCategories = filteredTrackerCategoriesCoreData()
-        let trackerCategoryCoreData = filteredTrackerCategories[at.section]
-        let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
-        if filteredTrackers.count == 0 {
-            return nil
+        var trackerCategoryCoreData: TrackerCategoryCoreData
+        var trackerCoreDataObject: TrackerCoreData
+        if pinnedTrackers.count > 0 {
+            if at.section == 0 {
+                trackerCoreDataObject = pinnedTrackers[at.row]
+            } else {
+                trackerCategoryCoreData = filteredTrackerCategories[at.section - 1]
+                let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
+                if filteredTrackers.count == 0 { return nil }
+                trackerCoreDataObject = filteredTrackers[at.row]
+            }
+        } else {
+            trackerCategoryCoreData = filteredTrackerCategories[at.section]
+            let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
+            if filteredTrackers.count == 0 { return nil }
+            trackerCoreDataObject = filteredTrackers[at.row]
         }
-        let trackerCoreDataObject = filteredTrackers[at.row]
         guard let id = trackerCoreDataObject.id else {
             throw TrackerStoreError.decodingKeyErrorInvalidId
         }
@@ -204,11 +250,13 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         guard let emoji = trackerCoreDataObject.emoji else {
             throw TrackerStoreError.decodingKeyErrorInvalidEmoji
         }
+        let weekDaysInt = weekDaysFromInt(trackerCoreDataObject.schedule)
         let trackerObject = Tracker(id: id,
                                     name: name,
                                     color: UIColor.colorFromHex(hex: colorHex),
                                     emoji: emoji,
-                                    schedule: weekDaysFromInt(trackerCoreDataObject.schedule))
+                                    schedule: weekDaysInt,
+                                    isPinned: trackerCoreDataObject.isPinned)
         return trackerObject
     }
     
@@ -226,9 +274,22 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         }
         var result = 0
         for fetchObject in fetchObjects {
-            let trackers = filteredTrackersForCategory(fetchObject)
+            let trackers = filteredTrackersForCategory(fetchObject, filterPinned: false)
             let numberOfTrackersForCategory = trackers.count
             result = result + numberOfTrackersForCategory
+        }
+        return result
+    }
+    
+    func pinnedTrackersCoreData() -> [TrackerCoreData] {
+        var result: [TrackerCoreData] = []
+        let filteredTrackersCategoriesCoreData = filteredTrackerCategoriesCoreData(filterPinned: false)
+        for category in filteredTrackersCategoriesCoreData {
+            let filteredTrackers = filteredTrackersForCategory(category, filterPinned: false)
+            let pinnedTrackers = filteredTrackers.filter( { $0.isPinned } )
+            for pinnedTracker in pinnedTrackers {
+                result.append(pinnedTracker)
+            }
         }
         return result
     }

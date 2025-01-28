@@ -288,7 +288,8 @@ class CreateTrackerViewController: UIViewController {
                        name: nameTextField.text ?? "",
                        color: currentColor ?? .white,
                        emoji: currentEmoji ?? "",
-                       schedule: dayOfWeekSelected)
+                       schedule: dayOfWeekSelected,
+                       isPinned: false)
     }
     
     private func addCancelButton() {
@@ -375,7 +376,9 @@ class CreateTrackerViewController: UIViewController {
                     currentTracker = Tracker(id: currentTracker.id,
                                              name: nameTextField.text ?? "",
                                              color: currentColor,
-                                             emoji: currentEmoji, schedule: dayOfWeekSelected)
+                                             emoji: currentEmoji,
+                                             schedule: dayOfWeekSelected,
+                                             isPinned: currentTracker.isPinned)
                     
                     trackerCreated(currentTracker, selectedTrackerCategory)
                 }

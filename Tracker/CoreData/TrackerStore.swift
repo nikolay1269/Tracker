@@ -15,6 +15,7 @@ enum TrackerStoreError: Error {
     case decodingKeyErrorInvalidColor
     case decodingKeyErrorInvalidEmoji
     case decodingKeyErrorInvalidSchedule
+    case decodingKeyErrorInvalidIsPinned
 }
 
 protocol TrackerStoreProtocol {
@@ -42,6 +43,7 @@ extension TrackerStore: TrackerStoreProtocol {
         trackerCoreData.emoji = record.emoji
         trackerCoreData.schedule = intFromWeekDays(record.schedule)
         let trackerCategoryCoreData = findCategoryById(categoryId)
+        trackerCoreData.isPinned = record.isPinned
         trackerCoreData.category = trackerCategoryCoreData
         trackerCategoryCoreData?.addToTrackers(trackerCoreData)
         CoreDataManager.shared.saveContext()
@@ -59,7 +61,8 @@ extension TrackerStore: TrackerStoreProtocol {
             updatedTracker?.schedule = intFromWeekDays(record.schedule)
             let category = findCategoryById(categoryId)
             updatedTracker?.category = category
-            try context.save()
+            updatedTracker?.isPinned = record.isPinned
+            CoreDataManager.shared.saveContext()
         } catch {
             print(error)
         }
@@ -72,7 +75,7 @@ extension TrackerStore: TrackerStoreProtocol {
         do {
             if let deletedTracker = try context.fetch(fetchRequest).first {
                 context.delete(deletedTracker)
-                try context.save()
+                CoreDataManager.shared.saveContext()
             }
         } catch {
             print(error)

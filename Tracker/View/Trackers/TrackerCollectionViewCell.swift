@@ -40,7 +40,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     // MARK: - View Life Cycles
     override func prepareForReuse() {
         super.prepareForReuse()
-        pinImageView = nil
+        pinImageView?.image = nil
     }
     
     // MARK: - IB Actions
@@ -58,11 +58,14 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         let daysString = String.localizedStringWithFormat(NSLocalizedString("numberOfDays", comment: "Number of remaining days"), daysCount)
         daysCountLabel.text = String.localizedStringWithFormat(NSLocalizedString("daysCount", comment: "Correct form of 'word' day"), daysCount, daysString)
         changeStatus(isDone: status)
-        let isPin = false
-        if isPin {
+        if tracker.isPinned {
             if pinImageView == nil {
                 addPinImageView()
+            } else {
+                pinImageView?.image = UIImage(named: "pin")
             }
+        } else {
+            pinImageView?.image = nil
         }
     }
     
