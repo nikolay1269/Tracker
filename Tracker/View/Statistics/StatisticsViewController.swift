@@ -19,7 +19,7 @@ class StatisticsViewController: UIViewController {
         return label
     }()
     
-    private lazy var filtersTableView: UITableView = {
+    private lazy var statisticsTableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(StatisticsTableViewCell.self, forCellReuseIdentifier: cellIdentifier)
@@ -39,41 +39,48 @@ class StatisticsViewController: UIViewController {
     // MARK: - Private Properties
     private let cellIdentifier = "Cell"
     private let descriptions = [NSLocalizedString("Trackers completed", comment: "")]
-    private var values: [Int] = []
+    private var values = [0]
     private var emptyView: EmptyView?
 
     // MARK: - View Life Cycles
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        loadStatistics()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        loadAndShowStatistics()
     }
     
     // MARK: - Private Methods
     private func configureUI() {
         view.backgroundColor = .white
         view.addSubview(titleLabel)
-        view.addSubview(filtersTableView)
+        view.addSubview(statisticsTableView)
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 88),
-            filtersTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            filtersTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            filtersTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            filtersTableView.topAnchor.constraint(equalTo: titleLabel.topAnchor, constant: 77)
+            statisticsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            statisticsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            statisticsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            statisticsTableView.topAnchor.constraint(equalTo: titleLabel.topAnchor, constant: 77)
         ])
         emptyView = EmptyView(rootView: view,
-                              parentView: filtersTableView,
+                              parentView: statisticsTableView,
                               text: NSLocalizedString("There is nothing to analyze yet", comment: "Empty categories screen text"),
                               imageName: "FiltersEmptyScreen")
     }
     
-    private func loadStatistics() {
+    private func loadAndShowStatistics() {
         let trackersCompleted = trackerRecordStore.numberOfCompletedTrackers()
+        values[0] = trackersCompleted
         if trackersCompleted > 0 {
-            values.append(trackersCompleted)
+            statisticsTableView.isHidden = false
             emptyView?.isHidden = true
+            statisticsTableView.reloadData()
         } else {
+            statisticsTableView.isHidden = true
             emptyView?.isHidden = false
         }
     }
@@ -93,9 +100,6 @@ extension StatisticsViewController: UITableViewDataSource {
         }
         cell.selectionStyle = .none
         cell.configureCell(value: values[indexPath.row], description: descriptions[indexPath.row])
-        cell.setNeedsLayout()
-        cell.layoutIfNeeded()
-        cell.layoutSubviews()
         return cell
     }
 }
