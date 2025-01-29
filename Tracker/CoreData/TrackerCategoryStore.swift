@@ -114,7 +114,7 @@ final class TrackerCategoryStore: NSObject {
     private func filteredTrackersForCategory(_ category: TrackerCategoryCoreData, filterPinned: Bool = true) -> [TrackerCoreData] {
         
         guard let currentDayOfWeekInt = Calendar.current.dateComponents([.weekday], from: currentDate).weekday, let currentDayOfWeek = WeekDay(rawValue: currentDayOfWeekInt) else { return [] }
-        let filteredTrackers: [TrackerCoreData] = category.trackers?.allObjects.filter({ tcd in
+        var filteredTrackers: [TrackerCoreData] = category.trackers?.allObjects.filter({ tcd in
             let trackerCoreData = tcd as? TrackerCoreData
             let name = trackerCoreData?.name?.lowercased() ?? ""
             let searchText = searchText?.lowercased() ?? ""
@@ -129,6 +129,7 @@ final class TrackerCategoryStore: NSObject {
             (isTrackerCompeleted(trackerCoreData) || currentFilter != .completed) &&
             (!isTrackerCompeleted(trackerCoreData) || currentFilter != .notcompleted)
         }) as? [TrackerCoreData] ?? []
+        filteredTrackers.sort { tc1, tc2 in return tc1.name ?? "" < tc2.name ?? "" }
         return filteredTrackers
     }
     

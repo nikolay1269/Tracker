@@ -19,10 +19,12 @@ final class TrackersViewController: UIViewController {
     private var filterButton: UIButton?
     private var datePicker: UIDatePicker?
     
+    // MARK: - Public Properties
+    var currentDate: Date = Date()
+    
     // MARK: - Private Properties
     private let cellIdentifier = "trackCellIdentifier"
     private let headerIdentifier = "headerIdentifier"
-    private var currentDate: Date = Date()
     private var currentFilter: TrackerFilter = .all
     private lazy var trackerStore: TrackerStoreProtocol? = {
         let context = CoreDataManager.shared.context
@@ -116,8 +118,8 @@ final class TrackersViewController: UIViewController {
         collectionView?.reloadData()
     }
     
-    // MARK: - Private Methods
-    private func handleCurrentDate() {
+    // MARK: - Public Methods
+    func handleCurrentDate() {
         trackerCategoryStore?.setCurrentDate(date: currentDate)
         let itemsNumber = trackerCategoryStore?.numberOfItems() ?? 0
         changeEmptyViewVisibility(itemsNumber == 0)
@@ -125,6 +127,7 @@ final class TrackersViewController: UIViewController {
         collectionView?.reloadData()
     }
     
+    // MARK: - Private Methods
     private func addFilterButton() {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
