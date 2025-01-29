@@ -31,6 +31,7 @@
 		F375D9EB2CF8A04500D19B7F /* SF-Pro.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F375D9EA2CF8A03E00D19B7F /* SF-Pro.ttf */; };
 		F375D9EE2CF8A0A000D19B7F /* Date+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = F375D9ED2CF8A0A000D19B7F /* Date+String.swift */; };
 		F37CDAD32D4A02CA0028356D /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37CDAD22D4A02CA0028356D /* Colors.swift */; };
+		F37CDAD52D4A48F10028356D /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37CDAD42D4A48F10028356D /* AnalyticsService.swift */; };
 		F37FA9512D06CC19004EEC83 /* TrackerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37FA9502D06CC19004EEC83 /* TrackerCollectionViewCell.swift */; };
 		F381ED5D2D3532E90074455F /* TrackerRecordCoreData+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = F381ED5B2D3532E90074455F /* TrackerRecordCoreData+CoreDataClass.swift */; };
 		F381ED5E2D3532E90074455F /* TrackerRecordCoreData+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = F381ED5C2D3532E90074455F /* TrackerRecordCoreData+CoreDataProperties.swift */; };
@@ -90,6 +91,7 @@
 		F375D9EA2CF8A03E00D19B7F /* SF-Pro.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro.ttf"; sourceTree = "<group>"; };
 		F375D9ED2CF8A0A000D19B7F /* Date+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+String.swift"; sourceTree = "<group>"; };
 		F37CDAD22D4A02CA0028356D /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		F37CDAD42D4A48F10028356D /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		F37FA9502D06CC19004EEC83 /* TrackerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCollectionViewCell.swift; sourceTree = "<group>"; };
 		F381ED5B2D3532E90074455F /* TrackerRecordCoreData+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrackerRecordCoreData+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F381ED5C2D3532E90074455F /* TrackerRecordCoreData+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrackerRecordCoreData+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				F375D9EA2CF8A03E00D19B7F /* SF-Pro.ttf */,
 				F31952172CF5AA0E009F3D77 /* Assets.xcassets */,
 				F319521C2CF5AA0E009F3D77 /* Info.plist */,
+				F37CDAD42D4A48F10028356D /* AnalyticsService.swift */,
 			);
 			path = Tracker;
 			sourceTree = "<group>";
@@ -337,7 +340,6 @@
 				4AFC06D71C9C0B18BFAC6AB9 /* Pods-Tracker.debug.xcconfig */,
 				4F0CD8B0EBC6B38280BC5029 /* Pods-Tracker.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -477,6 +479,7 @@
 				F342D6C22D31052B00572BA7 /* TrackerCategoryCoreData+CoreDataClass.swift in Sources */,
 				F381ED5E2D3532E90074455F /* TrackerRecordCoreData+CoreDataProperties.swift in Sources */,
 				F37FA9512D06CC19004EEC83 /* TrackerCollectionViewCell.swift in Sources */,
+				F37CDAD52D4A48F10028356D /* AnalyticsService.swift in Sources */,
 				F3539CF02D49227D008C2804 /* StatisticsTableViewCell.swift in Sources */,
 				F36A489E2D0976C4008DBDD6 /* SupplementaryView.swift in Sources */,
 				F342D6C32D31052B00572BA7 /* TrackerCategoryCoreData+CoreDataProperties.swift in Sources */,

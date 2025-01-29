@@ -46,6 +46,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     // MARK: - IB Actions
     @objc private func statusButtonTapped() {
         guard let trackerStatusChanged = trackerStatusChanged else { return }
+        AnalyticService.shared.sendClickEvent(screen: .main, item: .track)
         trackerStatusChanged()
     }
     

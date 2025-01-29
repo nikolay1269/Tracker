@@ -53,7 +53,18 @@ final class TrackersViewController: UIViewController {
         addDateTimePicker()
         let visible = trackerCategoryStore?.numberOfItems() == 0
         changeEmptyViewVisibility(visible)
+        changeFilterButtonVisibility(!visible)
         collectionView?.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        AnalyticService.shared.sendOpenEvent(screen: .main)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        AnalyticService.shared.sendCloseEvent(screen: .main)
     }
     
     // MARK: - IB Actions
@@ -65,22 +76,19 @@ final class TrackersViewController: UIViewController {
             self.currentFilter = filter
             self.trackerCategoryStore?.setCurrentFilter(filter: filter)
             switch(filter) {
-            case .all:
-                print("Filter selected")
             case .today:
                 self.currentFilter = .all
                 self.currentDate = Date()
                 self.datePicker?.setDate(self.currentDate, animated: true)
                 self.handleCurrentDate()
-            case .completed:
-                print("Filter selected")
-            case .notcompleted:
-                print("Filter selected")
+            default:
+                break
             }
             self.collectionView?.reloadData()
             let state = self.trackerCategoryStore?.numberOfItems() ?? 0 == 0
             self.changeEmptyViewVisibility(state)
         }
+        AnalyticService.shared.sendClickEvent(screen: .main, item: .filter)
         present(filtersViewController, animated: true)
     }
     
@@ -94,6 +102,7 @@ final class TrackersViewController: UIViewController {
             self.changeFilterButtonVisibility(itemsNumber > 0)
             self.collectionView?.reloadData()
         }
+        AnalyticService.shared.sendClickEvent(screen: .main, item: .add_track)
         self.present(selectTrackerTypeViewController, animated: true)
     }
     
@@ -407,6 +416,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
                 } else {
                     createTrackerViewController.trackerType = .event
                 }
+                AnalyticService.shared.sendClickEvent(screen: .main, item: .edit)
                 self.present(createTrackerViewController, animated: true)
             }
             
@@ -425,6 +435,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
                 alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel , handler: { (UIAlertAction) in
                     alert.dismiss(animated: true)
                 }))
+                AnalyticService.shared.sendClickEvent(screen: .main, item: .delete)
                 self?.present(alert, animated: true)
             }
             
