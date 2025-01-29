@@ -15,6 +15,7 @@ final class TrackersViewController: UIViewController {
     private var trackersLabel: UILabel?
     private var collectionView: UICollectionView?
     private var emptyView: UIView?
+    private var emptyImageView: UIImageView?
     private var searchTextField: UISearchTextField?
     private var filterButton: UIButton?
     private var datePicker: UIDatePicker?
@@ -53,9 +54,7 @@ final class TrackersViewController: UIViewController {
         addCollectionView()
         addEmptyView()
         addDateTimePicker()
-        let visible = trackerCategoryStore?.numberOfItems() == 0
-        changeEmptyViewVisibility(visible)
-        changeFilterButtonVisibility(!visible)
+        changeEmptyViewAndFilterButtonVisibility()
         collectionView?.reloadData()
     }
     
@@ -87,8 +86,7 @@ final class TrackersViewController: UIViewController {
                 break
             }
             self.collectionView?.reloadData()
-            let state = self.trackerCategoryStore?.numberOfItems() ?? 0 == 0
-            self.changeEmptyViewVisibility(state)
+            self.changeEmptyViewAndFilterButtonVisibility()
         }
         AnalyticService.shared.sendClickEvent(screen: .main, item: .filter)
         present(filtersViewController, animated: true)
@@ -100,8 +98,7 @@ final class TrackersViewController: UIViewController {
             
             guard let self = self else { return }
             self.addNewTracker(tracker: newTracker, trackerCategory: trackerCategory)
-            let itemsNumber = self.trackerCategoryStore?.numberOfItems() ?? 0
-            self.changeFilterButtonVisibility(itemsNumber > 0)
+            self.changeEmptyViewAndFilterButtonVisibility()
             self.collectionView?.reloadData()
         }
         AnalyticService.shared.sendClickEvent(screen: .main, item: .add_track)
@@ -116,14 +113,13 @@ final class TrackersViewController: UIViewController {
     @objc private func searchTextFieldValueChanged() {
         trackerCategoryStore?.setSearchText(text: searchTextField?.text ?? "")
         collectionView?.reloadData()
+        changeEmptyViewAndFilterButtonVisibility()
     }
     
     // MARK: - Public Methods
     func handleCurrentDate() {
         trackerCategoryStore?.setCurrentDate(date: currentDate)
-        let itemsNumber = trackerCategoryStore?.numberOfItems() ?? 0
-        changeEmptyViewVisibility(itemsNumber == 0)
-        changeFilterButtonVisibility(itemsNumber > 0)
+        changeEmptyViewAndFilterButtonVisibility()
         collectionView?.reloadData()
     }
     
@@ -268,6 +264,7 @@ final class TrackersViewController: UIViewController {
         imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
         imageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
         emptyView.addSubview(imageView)
+        emptyImageView = imageView
         imageView.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor).isActive = true
         imageView.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor).isActive = true
         let label = UILabel()
@@ -281,12 +278,21 @@ final class TrackersViewController: UIViewController {
         self.emptyView = emptyView
     }
     
-    private func changeEmptyViewVisibility(_ visible: Bool) {
-        emptyView?.isHidden = !visible
-    }
-    
-    private func changeFilterButtonVisibility(_ visible: Bool) {
-        filterButton?.isHidden = !visible
+    private func changeEmptyViewAndFilterButtonVisibility() {
+        let numberOfFilteredItems = trackerCategoryStore?.numberOfItems(filter: currentFilter, searchText: searchTextField?.text) ?? 0
+        let numberOfItemsWithoutFilters = trackerCategoryStore?.numberOfItems(filter: .all, searchText: nil) ?? 0
+        if numberOfItemsWithoutFilters == 0 {
+            emptyView?.isHidden = false
+            emptyImageView?.image = UIImage(named: "TrackersEmptyScreen")
+            filterButton?.isHidden = true
+        } else if numberOfFilteredItems == 0 && numberOfItemsWithoutFilters > 0 {
+            emptyView?.isHidden = false
+            emptyImageView?.image = UIImage(named: "FiltersEmptyScreen")
+            filterButton?.isHidden = false
+        } else if numberOfFilteredItems > 0 {
+            emptyView?.isHidden = true
+            filterButton?.isHidden = false
+        }
     }
 }
 
@@ -431,8 +437,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
                 alert.addAction(UIAlertAction(title: deleteTitle, style: .destructive , handler: { [weak self] (UIAlertAction) in
                     guard let self = self else { return }
                     self.deleteTracker(tracker: tracker)
-                    let itemsNumber = self.trackerCategoryStore?.numberOfItems() ?? 0
-                    self.changeFilterButtonVisibility(itemsNumber > 0)
+                    self.changeEmptyViewAndFilterButtonVisibility()
                 }))
                 let cancelTitle = NSLocalizedString("Cancel", comment: "")
                 alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel , handler: { (UIAlertAction) in
@@ -471,7 +476,6 @@ extension TrackersViewController: TrackerCategoryStoreDelegate {
     
     func didUpdate() {
         collectionView?.reloadData()
-        let visible = trackerCategoryStore?.numberOfItems() == 0
-        changeEmptyViewVisibility(visible)
+        changeEmptyViewAndFilterButtonVisibility()
     }
 }

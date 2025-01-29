@@ -69,7 +69,7 @@ class StatisticsViewController: UIViewController {
         emptyView = EmptyView(rootView: view,
                               parentView: statisticsTableView,
                               text: NSLocalizedString("There is nothing to analyze yet", comment: "Empty categories screen text"),
-                              imageName: "FiltersEmptyScreen")
+                              imageName: "StatisticsEmptyScreen")
     }
     
     private func loadAndShowStatistics() {
