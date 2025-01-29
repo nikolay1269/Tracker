@@ -85,7 +85,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         statusButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(statusButton)
         statusButton.layer.cornerRadius = 17
-        statusButton.tintColor = UIColor(named: "YPWhite")
+        statusButton.tintColor = .systemBackground
         statusButton.heightAnchor.constraint(equalToConstant: 34).isActive = true
         statusButton.widthAnchor.constraint(equalToConstant: 34).isActive = true
         statusButton.topAnchor.constraint(equalTo: mainView.bottomAnchor, constant: 8).isActive = true

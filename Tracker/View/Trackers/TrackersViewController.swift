@@ -43,7 +43,7 @@ final class TrackersViewController: UIViewController {
     // MARK: - View Life Cycles
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.shared.backgroundColor
         addLeftNavigationBarItem()
         addTrackersLabel()
         addSearchTextField()
@@ -137,7 +137,7 @@ final class TrackersViewController: UIViewController {
     
     private func addLeftNavigationBarItem() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped))
-        navigationItem.leftBarButtonItem?.tintColor = .black
+        navigationItem.leftBarButtonItem?.tintColor = .label
     }
     
     private func addNewTracker(tracker: Tracker, trackerCategory: TrackerCategory) {
@@ -171,7 +171,7 @@ final class TrackersViewController: UIViewController {
         datePicker.preferredDatePickerStyle = .compact
         datePicker.locale = Locale.current
         datePicker.calendar.firstWeekday = 2
-        datePicker.overrideUserInterfaceStyle = .light
+        datePicker.layer.cornerRadius = 8
         let datePickerBarButtonItem = UIBarButtonItem(customView: datePicker)
         navigationItem.rightBarButtonItem = datePickerBarButtonItem
         let currentDate = Date()
@@ -201,7 +201,7 @@ final class TrackersViewController: UIViewController {
         searchTextField.backgroundColor = UIColor(named: "SearchColor")
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(searchTextField)
-        searchTextField.textColor = UIColor(named: "YPBlack")
+        searchTextField.textColor = .label
         searchTextField.font = UIFont(name: "SF Pro Regular", size: 17)
         searchTextField.layer.cornerRadius = 10
         searchTextField.heightAnchor.constraint(equalToConstant: 36).isActive = true
@@ -236,6 +236,7 @@ final class TrackersViewController: UIViewController {
         }
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.backgroundColor = Colors.shared.backgroundColor
         self.collectionView = collectionView
     }
     
