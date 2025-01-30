@@ -16,14 +16,18 @@ enum TrackerCategoryStoreError: Error {
 
 protocol TrackerCategoryStoreProtocol {
     var numberOfSections: Int { get }
-    func numbersOfObjectsInSection(_ section: Int) -> Int
+    func numberOfCategories() -> Int
+    func allTrackerCategories() -> [TrackerCategory]
     func titleForSection(_ section: Int) -> String
+    func category(at: IndexPath) -> TrackerCategory?
+    func filteredCategory(at: IndexPath) -> TrackerCategory?
     func addRecord(_ record: TrackerCategory) throws
-    func object(at: IndexPath) throws -> Tracker?
-    func getDefaultCategory() -> TrackerCategory?
+    func numbersOfFilteredTrackersInSection(_ section: Int) -> Int
+    func filteredTracker(at: IndexPath) throws -> Tracker?
     func setCurrentDate(date: Date)
     func setSearchText(text: String)
-    func numberOfItems() -> Int
+    func setCurrentFilter(filter: TrackerFilter)
+    func numberOfItems(filter: TrackerFilter, searchText: String?) -> Int
 }
 
 protocol TrackerCategoryStoreDelegate: AnyObject {
@@ -35,6 +39,7 @@ final class TrackerCategoryStore: NSObject {
     // MARK: - Public Properties
     var currentDate: Date
     var searchText: String?
+    var currentFilter = TrackerFilter.all
     
     // MARK: - Private Properties
     private var context: NSManagedObjectContext
@@ -51,76 +56,13 @@ final class TrackerCategoryStore: NSObject {
     }()
     
     // MARK: - Initializers
-    init(context: NSManagedObjectContext, date: Date, delegate: TrackerCategoryStoreDelegate) {
+    init(context: NSManagedObjectContext, date: Date, delegate: TrackerCategoryStoreDelegate? = nil) {
         self.context = context
         self.currentDate = date
         self.delegate = delegate
     }
-}
-
-// MARK: - TrackerCategoryStoreProtocol
-extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
     
-    func setSearchText(text: String) {
-        self.searchText = text
-    }
-    
-    func numberOfItems() -> Int {
-        guard let fetchObjects = fetchedResultController.fetchedObjects else {
-            return 0
-        }
-        var result = 0
-        for fetchObject in fetchObjects {
-            let trackers = filteredTrackersForCategory(fetchObject)
-            let numberOfTrackersForCategory = trackers.count
-            result = result + numberOfTrackersForCategory
-        }
-        return result
-    }
-    
-    func setCurrentDate(date: Date) {
-        self.currentDate = date
-    }
-
-    func titleForSection(_ section: Int) -> String {
-        guard fetchedResultController.fetchedObjects?.count ?? 0 > 0 else {
-            return ""
-        }
-        
-        if let trackerCategoryCoreData = fetchedResultController.fetchedObjects?[section] {
-            let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
-            if filteredTrackers.count > 0 {
-                return trackerCategoryCoreData.name ?? ""
-            } else {
-                return ""
-            }
-        } else {
-            return ""
-        }
-    }
-    
-    func getDefaultCategory() -> TrackerCategory? {
-        if let trackerCategoryCoreData = fetchedResultController.fetchedObjects?.first {
-            let trackerCategory = try? trackerCategoryFromCoreDataObject(trackerCategoryCoreData)
-            return trackerCategory
-        }
-        return nil
-    }
-    
-    var numberOfSections: Int {
-        fetchedResultController.sections?.count ?? 0
-    }
-    
-    func numbersOfObjectsInSection(_ section: Int) -> Int {
-        guard let objectsCount = fetchedResultController.fetchedObjects?.count,
-              objectsCount > 0,
-              let trackerCategoryCoreData: TrackerCategoryCoreData = fetchedResultController.fetchedObjects?[section] else {
-            return 0
-        }
-        let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
-        return filteredTrackers.count
-    }
-    
+    // MARK: - Private Methods
     private func trackerCategoryFromCoreDataObject(_ categoryCoreData: TrackerCategoryCoreData) throws -> TrackerCategory {
         guard let name = categoryCoreData.name else {
             throw TrackerCategoryStoreError.decodingKeyErrorInvalidName
@@ -142,19 +84,171 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         return result
     }
     
+    private func filteredTrackerCategoriesCoreData(filterPinned: Bool = true) -> [TrackerCategoryCoreData] {
+        
+        var result: [TrackerCategoryCoreData] = []
+        guard let fethedObjects = fetchedResultController.fetchedObjects else {
+            return []
+        }
+        
+        for trackerCategoryCoreData in fethedObjects {
+            let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData, filterPinned: filterPinned, filter: currentFilter, searchText: searchText)
+            if filteredTrackers.count > 0 {
+                result.append(trackerCategoryCoreData)
+            }
+        }
+        return result
+    }
+    
+    private func allTrackerCategoriesCoreData() -> [TrackerCategoryCoreData] {
+        guard let objects = fetchedResultController.fetchedObjects else {
+            return []
+        }
+        return objects
+    }
+    
     private func isTrackerForWeekDay(_ weekDay: WeekDay, weekDayInt: Int16) -> Bool {
         return weekDayInt & weekDay.value > 0
     }
     
-    func object(at: IndexPath) throws -> Tracker? {
-        guard let trackerCategoryCoreData: TrackerCategoryCoreData = fetchedResultController.fetchedObjects?[at.section] else {
-            fatalError()
+    private func filteredTrackersForCategory(_ category: TrackerCategoryCoreData, filterPinned: Bool = true, filter: TrackerFilter, searchText: String?) -> [TrackerCoreData] {
+        
+        guard let currentDayOfWeekInt = Calendar.current.dateComponents([.weekday], from: currentDate).weekday, let currentDayOfWeek = WeekDay(rawValue: currentDayOfWeekInt) else { return [] }
+        var filteredTrackers: [TrackerCoreData] = category.trackers?.allObjects.filter({ tcd in
+            let trackerCoreData = tcd as? TrackerCoreData
+            let name = trackerCoreData?.name?.lowercased() ?? ""
+            let searchText = searchText?.lowercased() ?? ""
+            return (isTrackerForWeekDay(currentDayOfWeek, weekDayInt: trackerCoreData?.schedule ?? 0) ||
+                    (trackerCoreData?.schedule == 0 &&
+                     (!isTrackerCompeleted(trackerCoreData) || trackerCoreData?.records?.filter({ record in
+                let trackerRerordCoreData = record as? TrackerRecordCoreData
+                return trackerRerordCoreData?.date?.scheduleComparison(date: currentDate) == .orderedSame
+            }).count ?? 0 > 0))) &&
+            (name.contains(searchText) || searchText.isEmpty) &&
+            !(trackerCoreData?.isPinned ?? false && filterPinned) &&
+            (isTrackerCompeleted(trackerCoreData) || filter != .completed) &&
+            (!isTrackerCompeleted(trackerCoreData) || filter != .notcompleted)
+        }) as? [TrackerCoreData] ?? []
+        filteredTrackers.sort { tc1, tc2 in return tc1.name ?? "" < tc2.name ?? "" }
+        return filteredTrackers
+    }
+    
+    private func isTrackerCompeleted(_ trackerCoreData: TrackerCoreData?) -> Bool {
+        return trackerCoreData?.records?.count ?? 0 > 0
+    }
+}
+
+// MARK: - TrackerCategoryStoreProtocol
+extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
+    
+    var numberOfSections: Int {
+        filteredTrackerCategoriesCoreData().count + (pinnedTrackersCoreData().count > 0 ? 1 : 0)
+    }
+    
+    func numberOfCategories() -> Int {
+        return fetchedResultController.fetchedObjects?.count ?? 0
+    }
+    
+    func allTrackerCategories() -> [TrackerCategory] {
+        var result: [TrackerCategory] = []
+        let trackerCategoriesCoreData = allTrackerCategoriesCoreData()
+        for trackerCategoryCoreData in trackerCategoriesCoreData {
+            do {
+                try result.append(trackerCategoryFromCoreDataObject(trackerCategoryCoreData))
+            } catch {
+                print(error)
+            }
         }
-        let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData)
-        if filteredTrackers.count == 0 {
+        return result
+    }
+    
+    func titleForSection(_ section: Int) -> String {
+        let filteredTrackerCategories = filteredTrackerCategoriesCoreData()
+        if pinnedTrackersCoreData().count > 0 {
+            if section == 0 {
+                return "Закрепленные"
+            } else {
+                return filteredTrackerCategories[section - 1].name ?? ""
+            }
+        } else {
+            return filteredTrackerCategories[section].name ?? ""
+        }
+    }
+    
+    func category(at: IndexPath) -> TrackerCategory? {
+        if let categoryCoreData = fetchedResultController.fetchedObjects?[at.row] {
+            return try? trackerCategoryFromCoreDataObject(categoryCoreData)
+        } else {
             return nil
         }
-        let trackerCoreDataObject = filteredTrackers[at.row]
+    }
+    
+    func filteredCategory(at: IndexPath) -> TrackerCategory? {
+        let pinnedTrackers = pinnedTrackersCoreData()
+        let filteredCategories = filteredTrackerCategoriesCoreData()
+        var categoryCoreData: TrackerCategoryCoreData
+        if pinnedTrackers.count > 0 {
+            if at.section == 0 {
+                let trackerCoreDataObject = pinnedTrackers[at.row]
+                if let category = trackerCoreDataObject.category {
+                    return try? trackerCategoryFromCoreDataObject(category)
+                } else {
+                    return nil
+                }
+            } else {
+                categoryCoreData = filteredCategories[at.section - 1]
+            }
+        } else {
+            categoryCoreData = filteredCategories[at.section]
+        }
+        return try? trackerCategoryFromCoreDataObject(categoryCoreData)
+    }
+    
+    func addRecord(_ record: TrackerCategory) throws {
+        let trackerCategoryCoreData = TrackerCategoryCoreData(context: context)
+        trackerCategoryCoreData.categoryId = record.id
+        trackerCategoryCoreData.name = record.name
+        CoreDataManager.shared.saveContext()
+    }
+    
+    func numbersOfFilteredTrackersInSection(_ section: Int) -> Int {
+        let pinnedTrackers = pinnedTrackersCoreData()
+        let filteredTrackerCategies = filteredTrackerCategoriesCoreData()
+        if pinnedTrackers.count > 0 {
+            if section == 0 {
+                return pinnedTrackers.count
+            } else {
+                let trackerCategoryCoreData = filteredTrackerCategies[section - 1]
+                let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData, filter: currentFilter, searchText: searchText)
+                return filteredTrackers.count
+            }
+        } else {
+            let trackerCategoryCoreData = filteredTrackerCategies[section]
+            let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData, filter: currentFilter, searchText: searchText)
+            return filteredTrackers.count
+        }
+    }
+    
+    func filteredTracker(at: IndexPath) throws -> Tracker? {
+        let pinnedTrackers = pinnedTrackersCoreData()
+        let filteredTrackerCategories = filteredTrackerCategoriesCoreData()
+        var trackerCategoryCoreData: TrackerCategoryCoreData
+        var trackerCoreDataObject: TrackerCoreData
+        if pinnedTrackers.count > 0 {
+            if at.section == 0 {
+                trackerCoreDataObject = pinnedTrackers[at.row]
+            } else {
+                trackerCategoryCoreData = filteredTrackerCategories[at.section - 1]
+                let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData, filter: currentFilter, searchText: searchText)
+                if filteredTrackers.count == 0 { return nil }
+                trackerCoreDataObject = filteredTrackers[at.row]
+            }
+        } else {
+            trackerCategoryCoreData = filteredTrackerCategories[at.section]
+            let filteredTrackers = filteredTrackersForCategory(trackerCategoryCoreData, filter: currentFilter, searchText: searchText)
+            if filteredTrackers.count == 0 { return nil }
+            trackerCoreDataObject = filteredTrackers[at.row]
+        }
         guard let id = trackerCoreDataObject.id else {
             throw TrackerStoreError.decodingKeyErrorInvalidId
         }
@@ -167,36 +261,52 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         guard let emoji = trackerCoreDataObject.emoji else {
             throw TrackerStoreError.decodingKeyErrorInvalidEmoji
         }
+        let weekDaysInt = weekDaysFromInt(trackerCoreDataObject.schedule)
         let trackerObject = Tracker(id: id,
                                     name: name,
                                     color: UIColor.colorFromHex(hex: colorHex),
                                     emoji: emoji,
-                                    schedule: weekDaysFromInt(trackerCoreDataObject.schedule))
+                                    schedule: weekDaysInt,
+                                    isPinned: trackerCoreDataObject.isPinned)
         return trackerObject
     }
     
-    private func filteredTrackersForCategory(_ category: TrackerCategoryCoreData) -> [TrackerCoreData] {
-        
-        guard let currentDayOfWeekInt = Calendar.current.dateComponents([.weekday], from: currentDate).weekday, let currentDayOfWeek = WeekDay(rawValue: currentDayOfWeekInt) else { return [] }
-        let filteredTrackers: [TrackerCoreData] = category.trackers?.allObjects.filter({ tcd in
-            let trackerCoreData = tcd as! TrackerCoreData
-            let name = trackerCoreData.name?.lowercased() ?? ""
-            let searchText = searchText?.lowercased() ?? ""
-            return (isTrackerForWeekDay(currentDayOfWeek, weekDayInt: trackerCoreData.schedule) ||
-            (trackerCoreData.schedule == 0 &&
-             (trackerCoreData.records?.count == 0 || trackerCoreData.records?.filter({ record in
-                let trackerRerordCoreData = record as! TrackerRecordCoreData
-                return trackerRerordCoreData.date?.scheduleComparison(date: currentDate) == .orderedSame
-            }).count ?? 0 > 0))) && (name.contains(searchText) || searchText.isEmpty)
-        }) as! [TrackerCoreData]
-        return filteredTrackers
+    func setCurrentDate(date: Date) {
+        self.currentDate = date
     }
     
-    func addRecord(_ record: TrackerCategory) throws {
-        let trackerCategoryCoreData = TrackerCategoryCoreData(context: context)
-        trackerCategoryCoreData.categoryId = record.id
-        trackerCategoryCoreData.name = record.name
-        CoreDataManager.shared.saveContext()
+    func setSearchText(text: String) {
+        self.searchText = text
+    }
+    
+    func setCurrentFilter(filter: TrackerFilter) {
+        currentFilter = filter
+    }
+    
+    func numberOfItems(filter: TrackerFilter, searchText: String?) -> Int {
+        guard let fetchObjects = fetchedResultController.fetchedObjects else {
+            return 0
+        }
+        var result = 0
+        for fetchObject in fetchObjects {
+            let trackers = filteredTrackersForCategory(fetchObject, filterPinned: false, filter: filter, searchText: searchText)
+            let numberOfTrackersForCategory = trackers.count
+            result = result + numberOfTrackersForCategory
+        }
+        return result
+    }
+    
+    func pinnedTrackersCoreData() -> [TrackerCoreData] {
+        var result: [TrackerCoreData] = []
+        let filteredTrackersCategoriesCoreData = filteredTrackerCategoriesCoreData(filterPinned: false)
+        for category in filteredTrackersCategoriesCoreData {
+            let filteredTrackers = filteredTrackersForCategory(category, filterPinned: false, filter: currentFilter, searchText: searchText)
+            let pinnedTrackers = filteredTrackers.filter( { $0.isPinned } )
+            for pinnedTracker in pinnedTrackers {
+                result.append(pinnedTracker)
+            }
+        }
+        return result
     }
 }
 

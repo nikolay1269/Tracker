@@ -1,0 +1,64 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Nikolay on 22.01.2025.
+  
+*/
+
+"daysCount" = "%d %@";
+"Trackers" = "Trackers";
+"What will we monitor?" = "What will we monitor?";
+"Statistics" = "Statistics";
+"Creating a tracker" = "Creating a tracker";
+"Habit" = "Habit";
+"Event" = "Event";
+"New habit" = "New habit";
+"New event" = "New event";
+"Enter tracker name" = "Enter tracker name";
+"Category" = "Category";
+"Schedule" = "Schedule";
+"Create" = "Create";
+"Cancel" = "Cancel";
+"Color" = "Color";
+"Emoji" = "Emoji";
+"Limit 38 characters" = "Limit 38 characters";
+"Habits and events can be combined by meaning" = "Habits and events can be combined by meaning";
+"Add category" = "Add category";
+"New category" = "New category";
+"Enter category name" = "Enter category name";
+"Done" = "Done";
+"Monday" = "Monday";
+"Tuesday" = "Tuesday";
+"Wednesday" = "Wednesday";
+"Thursday" = "Thursday";
+"Friday" = "Friday";
+"Saturday" = "Saturday";
+"Sunday" = "Sunday";
+"Mo" = "Mo";
+"Tu" = "Tu";
+"We" = "We";
+"Th" = "Th";
+"Fr" = "Fr";
+"Sa" = "Sa";
+"Su" = "Su";
+"Now that's technology!" = "Now that's technology!";
+"Track only what you want" = "Track only what you want";
+"Even it is not liters of water and yoga" = "Even it is not liters of water and yoga";
+"Search" = "Search";
+"Edit" = "Edit";
+"Delete" = "Delete";
+"Pin" = "Pin";
+"Unpin" = "Unpin";
+"Edit habit" = "Edit habit";
+"Edit event" = "Edit event";
+"Save" = "Save";
+"Are you sure you want to remove the tracker?" = "Are you sure you want to remove the tracker?";
+"All trackers" = "All trackers";
+"Trackers for today" = "Trackers for today";
+"Completed" = "Completed";
+"Not completed" = "Not completed";
+"Filters" = "Filters";
+"Statistics" = "Statistics";
+"Trackers completed" = "Trackers completed";
+"There is nothing to analyze yet" = "There is nothing to analyze yet";
