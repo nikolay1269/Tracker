@@ -12,13 +12,21 @@ import SnapshotTesting
 final class TrackerTests: XCTestCase {
 
     func testMainScreenLightTheme() {
-        let vc = TabBarController()
-        assertSnapshots(of: vc, as: [.image(traits: .init(userInterfaceStyle: .light))])
+        let tabBarViewController = TabBarController()
+        guard let navigationViewController = tabBarViewController.viewControllers?[0] as? UINavigationController,
+        let trackersViewController = navigationViewController.viewControllers.first as? TrackersViewController else {
+            return
+        }
+        assertSnapshots(of: trackersViewController, as: [.image(traits: .init(userInterfaceStyle: .light))])
     }
     
     func testMainScreenDarkTheme() {
-        let vc = TabBarController()
-        assertSnapshots(of: vc, as: [.image(traits: .init(userInterfaceStyle: .dark))])
+        let tabBarViewController = TabBarController()
+        guard let navigationViewController = tabBarViewController.viewControllers?[0] as? UINavigationController,
+        let trackersViewController = navigationViewController.viewControllers.first as? TrackersViewController else {
+            return
+        }
+        assertSnapshots(of: trackersViewController, as: [.image(traits: .init(userInterfaceStyle: .dark))])
     }
     
     func testMainScreenForCurrentDate() {
