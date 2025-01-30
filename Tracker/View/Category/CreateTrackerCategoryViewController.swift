@@ -49,6 +49,7 @@ class CreateTrackerCategoryViewController: UIViewController {
         textField.leftView = paddingView
         textField.leftViewMode = .always
         textField.clearButtonMode = .whileEditing
+        textField.delegate = self
         textField.addTarget(self, action: #selector(trackerCategoryNameTextFieldEditingChanged), for: .editingChanged)
         return textField
     }()
@@ -57,6 +58,7 @@ class CreateTrackerCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
+        addTapGestureRegocnizerForHidingKeyboard()
     }
     
     // MARK: - IB Actions
@@ -103,5 +105,14 @@ class CreateTrackerCategoryViewController: UIViewController {
             doneButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             doneButton.heightAnchor.constraint(equalToConstant: 60)
         ])
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension CreateTrackerCategoryViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        trackerCategoryNameTextField.resignFirstResponder()
+        return true
     }
 }

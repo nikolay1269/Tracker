@@ -53,6 +53,7 @@
 		F3B0CDD82D1A9E84001F4DD4 /* ColorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3B0CDD72D1A9E84001F4DD4 /* ColorCollectionViewCell.swift */; };
 		F3B0CDDA2D1A9E98001F4DD4 /* EmojiCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3B0CDD92D1A9E98001F4DD4 /* EmojiCollectionViewCell.swift */; };
 		F3B75D8E2D3BD42700AF52F5 /* EmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3B75D8D2D3BD42700AF52F5 /* EmptyView.swift */; };
+		F3B8556E2D4BD85500DD3CBF /* UIViewController+TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3B8556D2D4BD85500DD3CBF /* UIViewController+TapGestureRecognizer.swift */; };
 		F3D2CC692D11A3F500A65920 /* ScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D2CC682D11A3F500A65920 /* ScheduleViewController.swift */; };
 		F3D3D8F52D3BBAA1007BCD1A /* TrackerCategoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D3D8F42D3BBAA1007BCD1A /* TrackerCategoriesViewController.swift */; };
 		F3DF95002D0069F10060DD1E /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DF94FF2D0069F10060DD1E /* Tracker.swift */; };
@@ -125,6 +126,7 @@
 		F3B0CDD72D1A9E84001F4DD4 /* ColorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCollectionViewCell.swift; sourceTree = "<group>"; };
 		F3B0CDD92D1A9E98001F4DD4 /* EmojiCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCollectionViewCell.swift; sourceTree = "<group>"; };
 		F3B75D8D2D3BD42700AF52F5 /* EmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyView.swift; sourceTree = "<group>"; };
+		F3B8556D2D4BD85500DD3CBF /* UIViewController+TapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+TapGestureRecognizer.swift"; sourceTree = "<group>"; };
 		F3D2CC682D11A3F500A65920 /* ScheduleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewController.swift; sourceTree = "<group>"; };
 		F3D3D8F42D3BBAA1007BCD1A /* TrackerCategoriesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCategoriesViewController.swift; sourceTree = "<group>"; };
 		F3DF94FF2D0069F10060DD1E /* Tracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracker.swift; sourceTree = "<group>"; };
@@ -248,6 +250,7 @@
 				F375D9ED2CF8A0A000D19B7F /* Date+String.swift */,
 				F399A1942D2F9B5500EDBCBC /* UIColor+Hex.swift */,
 				F37CDAD22D4A02CA0028356D /* Colors.swift */,
+				F3B8556D2D4BD85500DD3CBF /* UIViewController+TapGestureRecognizer.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -560,6 +563,7 @@
 				F39FFE882D10551400503140 /* CreateTrackerViewController.swift in Sources */,
 				F39C8D2B2D3CFE3500B89486 /* TrackerCategoryTableViewCell.swift in Sources */,
 				F342C7082D13148D00F2149C /* ScheduleTableViewCell.swift in Sources */,
+				F3B8556E2D4BD85500DD3CBF /* UIViewController+TapGestureRecognizer.swift in Sources */,
 				F3A444402D3A3E3E005F4C03 /* OnboardingContentViewController.swift in Sources */,
 				F3DF95002D0069F10060DD1E /* Tracker.swift in Sources */,
 				F3900D982D241C4C00925786 /* TrackerCategoryStore.swift in Sources */,

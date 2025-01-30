@@ -83,6 +83,7 @@ class CreateTrackerViewController: UIViewController {
         addParamsCollectionView()
         handleEditMode()
         addDaysCountLabel()
+        addTapGestureRegocnizerForHidingKeyboard()
     }
     
     // MARK: - Private Methods
@@ -156,6 +157,7 @@ class CreateTrackerViewController: UIViewController {
         self.trackerParamsCollectionView = trackerParamsCollectionView
         self.trackerParamsCollectionView?.dataSource = self
         self.trackerParamsCollectionView?.delegate = self
+        self.trackerParamsCollectionView?.keyboardDismissMode = .onDrag
         self.trackerParamsCollectionView?.reloadData()
     }
     
@@ -229,6 +231,7 @@ class CreateTrackerViewController: UIViewController {
         nameTextField.leftView = paddingView
         nameTextField.leftViewMode = .always
         nameTextField.clearButtonMode = .whileEditing
+        nameTextField.delegate = self
         nameTextField.addTarget(self, action: #selector(nameTextFieldEditingChanged), for: .editingChanged)
     }
     
@@ -335,6 +338,7 @@ class CreateTrackerViewController: UIViewController {
         paramsTableView.separatorStyle = .singleLine
         paramsTableView.separatorColor = UIColor(named: "YPGray")
         paramsTableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        paramsTableView.keyboardDismissMode = .onDrag
         paramsTableView.reloadData()
     }
     
@@ -634,5 +638,14 @@ extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout {
         case .none:
             break
         }
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension CreateTrackerViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        nameTextField.resignFirstResponder()
+        return true
     }
 }

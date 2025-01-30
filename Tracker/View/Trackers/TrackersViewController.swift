@@ -55,6 +55,7 @@ final class TrackersViewController: UIViewController {
         addEmptyView()
         addDateTimePicker()
         changeEmptyViewAndFilterButtonVisibility()
+        addTapGestureRegocnizerForHidingKeyboard()
         collectionView?.reloadData()
     }
     
@@ -223,6 +224,7 @@ final class TrackersViewController: UIViewController {
         let attributePlacedHolder = NSAttributedString(string: NSLocalizedString("Search", comment: "Search field placehodler"), attributes: attributes)
         searchTextField.attributedPlaceholder = attributePlacedHolder
         searchTextField.addTarget(self, action: #selector(searchTextFieldValueChanged), for: .editingChanged)
+        searchTextField.delegate = self
         self.searchTextField = searchTextField
     }
     
@@ -245,6 +247,7 @@ final class TrackersViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.backgroundColor = Colors.shared.backgroundColor
+        collectionView.keyboardDismissMode = .onDrag
         self.collectionView = collectionView
     }
     
@@ -472,10 +475,20 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: - TrackerCategoryStoreDelegate
 extension TrackersViewController: TrackerCategoryStoreDelegate {
     
     func didUpdate() {
         collectionView?.reloadData()
         changeEmptyViewAndFilterButtonVisibility()
+    }
+}
+
+// MARK: - UITextFieldDelegate
+extension TrackersViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        searchTextField?.resignFirstResponder()
+        return true
     }
 }
