@@ -8,8 +8,6 @@
 import UIKit
 
 final class CreateTrackerCategoryViewController: UIViewController {
-    
-    var viewModel: TrackerCategoriesViewModel?
 
     // MARK: - IB Outlets
     private lazy var newTrackerCategoryLabel: UILabel = {
@@ -54,6 +52,19 @@ final class CreateTrackerCategoryViewController: UIViewController {
         return textField
     }()
     
+    // MARK: - Private Properties
+    private var viewModel: TrackerCategoriesViewModel
+    
+    // MARK: - Initializers
+    init(viewModel: TrackerCategoriesViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - View Life Cycles
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,7 +74,7 @@ final class CreateTrackerCategoryViewController: UIViewController {
     
     // MARK: - IB Actions
     @objc private func doneButtonTapped() {
-        viewModel?.addTrackerCategoryTapped(name: trackerCategoryNameTextField.text ?? "")
+        viewModel.addTrackerCategoryTapped(name: trackerCategoryNameTextField.text ?? "")
         dismiss(animated: true)
     }
     

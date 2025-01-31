@@ -47,46 +47,61 @@ final class TrackerCategoriesViewController: UIViewController {
     }()
     
     // MARK: - Public Properties
-    var viewModel: TrackerCategoriesViewModel?
+    var viewModel: TrackerCategoriesViewModel
     var selectedCategory: TrackerCategory?
     var mode: ScreenMode?
     
     // MARK: - Private Properties
     private var emptyView: UIView?
-    private let celldentifier = "cellIdentifier"
+    
+    init(viewModel: TrackerCategoriesViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - View Life Cycles
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
-        let categoryCount = viewModel?.numberOfCategories()
+        let categoryCount = viewModel.numberOfCategories()
         changeEmptyViewVisibility(categoryCount == 0)
-        viewModel?.trackerCategoryViewModelsBinding = { [weak self] _ in
+        configureBindgins()
+        selectCurrentCategoryInTableView()
+    }
+    
+    // MARK: - IB Actions
+    @objc private func addCategoryButtonTapped() {
+
+        let createTrackerCategoryViewController = CreateTrackerCategoryViewController(viewModel: viewModel)
+        self.present(createTrackerCategoryViewController, animated: true)
+    }
+    
+    // MARK: - Private Methods
+    private func configureBindgins() {
+        viewModel.trackerCategoryViewModelsBinding = { [weak self] _ in
             guard let self = self else { return }
             self.trackerCategoriesTableView.reloadData()
-            let categoryCount = self.viewModel?.numberOfCategories()
+            let categoryCount = self.viewModel.numberOfCategories()
             self.changeEmptyViewVisibility(categoryCount == 0)
         }
+    }
+    
+    private func selectCurrentCategoryInTableView() {
         trackerCategoriesTableView.performBatchUpdates({}, completion: { isCompleted in
             if isCompleted {
                 if let selectedCategory = self.selectedCategory {
-                    let selectedCategoryIndex = self.viewModel?.getNumberOfCategory(category: selectedCategory)
-                    let cell = self.trackerCategoriesTableView.cellForRow(at: IndexPath(row: selectedCategoryIndex ?? 0, section: 0))
+                    let selectedCategoryIndex = self.viewModel.getNumberOfCategory(category: selectedCategory)
+                    let cell = self.trackerCategoriesTableView.cellForRow(at: IndexPath(row: selectedCategoryIndex, section: 0))
                     cell?.accessoryType = .checkmark
                 }
             }
         })
     }
     
-    // MARK: - IB Actions
-    @objc private func addCategoryButtonTapped() {
-
-        let createTrackerCategoryViewController = CreateTrackerCategoryViewController()
-        createTrackerCategoryViewController.viewModel = viewModel
-        self.present(createTrackerCategoryViewController, animated: true)
-    }
-    
-    // MARK: - Private Methods
     private func setupLayout() {
         
         view.backgroundColor = .white
@@ -122,7 +137,7 @@ final class TrackerCategoriesViewController: UIViewController {
 extension TrackerCategoriesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.numberOfCategories() ?? 0
+        return viewModel.numberOfCategories()
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -131,7 +146,7 @@ extension TrackerCategoriesViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let trackerCategoryViewModel = viewModel?.tracketCategoryViewModelAt(indexPath)
+        let trackerCategoryViewModel = viewModel.tracketCategoryViewModelAt(indexPath)
         cell.viewModel = trackerCategoryViewModel
         cell.accessoryType = .none
         cell.backgroundColor = UIColor(named: "TextFieldBackgroundColor")
@@ -152,14 +167,14 @@ extension TrackerCategoriesViewController: UITableViewDelegate {
         
         let selectedCell = tableView.cellForRow(at: indexPath)
         selectedCell?.accessoryType = .checkmark
-        viewModel?.selectTrackerCategoryTappedAt(indexPath)
+        viewModel.selectTrackerCategoryTappedAt(indexPath)
         dismiss(animated: true)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
         var corners: UIRectCorner = []
-        if indexPath.row == (viewModel?.numberOfCategories() ?? 0) - 1 {
+        if indexPath.row == viewModel.numberOfCategories() - 1 {
             corners.update(with: .bottomLeft)
             corners.update(with: .bottomRight)
         }
