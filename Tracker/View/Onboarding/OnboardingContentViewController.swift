@@ -9,14 +9,15 @@ import UIKit
 
 final class OnboardingContentViewController: UIViewController {
 
-    lazy var imageView: UIImageView = {
+    // MARK: - IB Outlets
+    private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
     
-    lazy var label: UILabel = {
+    private lazy var label: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.textColor = UIColor(named: "YPBlack")
@@ -26,11 +27,22 @@ final class OnboardingContentViewController: UIViewController {
         return label
     }()
     
+    // MARK: - View Life Cycles
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
     }
     
+    // MARK: - Public Methods
+    func configureLabel(text: String) {
+        label.text = text
+    }
+    
+    func configureImage(imageName: String) {
+        imageView.image = UIImage(named: imageName)
+    }
+    
+    // MARK: - Private Methods
     private func setupLayout() {
         view.addSubview(imageView)
         view.addSubview(label)

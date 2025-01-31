@@ -41,11 +41,11 @@ final class OnboardingPageViewController: UIPageViewController {
     
     private lazy var pages: [OnboardingContentViewController] = {
         let first = OnboardingContentViewController()
-        first.imageView.image = UIImage(named: "OnboardingImage1")
-        first.label.text = NSLocalizedString("Track only what you want", comment: "Onboarding label 1")
+        first.configureImage(imageName: "OnboardingImage1")
+        first.configureLabel(text: NSLocalizedString("Track only what you want", comment: "Onboarding label 1"))
         let second = OnboardingContentViewController()
-        second.imageView.image = UIImage(named: "OnboardingImage2")
-        second.label.text = NSLocalizedString("Even it is not liters of water and yoga", comment: "Onboarding label 2")
+        second.configureImage(imageName: "OnboardingImage2")
+        second.configureLabel(text: NSLocalizedString("Even it is not liters of water and yoga", comment: "Onboarding label 2"))
         return [first, second]
     }()
 
@@ -142,14 +142,17 @@ extension OnboardingPageViewController: UIPageViewControllerDelegate {
 
 // MARK: - UIPageViewControllerDataSource
 extension OnboardingPageViewController: UIPageViewControllerDataSource {
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+    func pageViewController(_ pageViewController: UIPageViewController,
+                            viewControllerBefore viewController: UIViewController) -> UIViewController? {
 
         return nil
     }
 
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+    func pageViewController(_ pageViewController: UIPageViewController,
+                            viewControllerAfter viewController: UIViewController) -> UIViewController? {
         
-        guard let onboardingViewController = viewController as? OnboardingContentViewController, let currentIndex = pages.firstIndex(of: onboardingViewController) else {
+        guard let onboardingViewController = viewController as? OnboardingContentViewController,
+              let currentIndex = pages.firstIndex(of: onboardingViewController) else {
             return nil
         }
 
