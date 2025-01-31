@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TrackerCategoryTableViewCell: UITableViewCell {
+final class TrackerCategoryTableViewCell: UITableViewCell {
     
     // MARK: - Public Properties
     var viewModel: TrackerCategoryViewModel? {

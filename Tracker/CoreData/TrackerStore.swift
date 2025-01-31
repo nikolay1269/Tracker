@@ -9,21 +9,6 @@ import Foundation
 import CoreData
 import UIKit
 
-enum TrackerStoreError: Error {
-    case decodingKeyErrorInvalidId
-    case decodingKeyErrorInvalidName
-    case decodingKeyErrorInvalidColor
-    case decodingKeyErrorInvalidEmoji
-    case decodingKeyErrorInvalidSchedule
-    case decodingKeyErrorInvalidIsPinned
-}
-
-protocol TrackerStoreProtocol {
-    func addRecord(_ record: Tracker, categoryId: UUID) throws
-    func updateRecord(_ record: Tracker, categoryId: UUID) throws
-    func deleteRecord(_ record: Tracker) throws
-}
-
 final class TrackerStore: NSObject {
     
     private let context: NSManagedObjectContext

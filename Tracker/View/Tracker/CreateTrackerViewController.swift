@@ -7,27 +7,7 @@
 
 import UIKit
 
-enum TrackerParamsTableView: Int {
-    case category
-    case schedule
-}
-
-enum TrackerType: Int {
-    case habit
-    case event
-}
-
-enum TrackerParamsCollectionView: Int {
-    case emoji
-    case color
-}
-
-enum ScreenMode {
-    case new
-    case edit
-}
-
-class CreateTrackerViewController: UIViewController {
+final class CreateTrackerViewController: UIViewController {
     
     // MARK: - IB Outlets
     private let titleLabel = UILabel()

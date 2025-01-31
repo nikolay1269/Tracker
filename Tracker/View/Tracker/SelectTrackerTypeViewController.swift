@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SelectTrackerTypeViewController: UIViewController {
+final class SelectTrackerTypeViewController: UIViewController {
     
     private let titleLabel = UILabel()
     private let habitButton = UIButton()

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class EmojiCollectionViewCell: UICollectionViewCell {
+final class EmojiCollectionViewCell: UICollectionViewCell {
     
     // MARK: - IB Outlets
     let emojiLabel = UILabel()

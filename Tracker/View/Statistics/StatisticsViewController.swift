@@ -7,7 +7,7 @@
 
 import UIKit
 
-class StatisticsViewController: UIViewController {
+final class StatisticsViewController: UIViewController {
     
     // MARK: - IB Outlets
     private lazy var titleLabel: UILabel = {

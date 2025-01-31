@@ -7,7 +7,7 @@
 
 import UIKit
 
-class OnboardingContentViewController: UIViewController {
+final class OnboardingContentViewController: UIViewController {
 
     lazy var imageView: UIImageView = {
         let imageView = UIImageView()

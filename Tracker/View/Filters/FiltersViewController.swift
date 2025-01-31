@@ -7,14 +7,7 @@
 
 import UIKit
 
-enum TrackerFilter: Int {
-    case all
-    case today
-    case completed
-    case notcompleted
-}
-
-class FiltersViewController: UIViewController {
+final class FiltersViewController: UIViewController {
     
     // MARK: - Public Properties
     var filterSelected: ((TrackerFilter) -> Void)?

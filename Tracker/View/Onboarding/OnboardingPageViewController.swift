@@ -7,7 +7,7 @@
 
 import UIKit
 
-class OnboardingPageViewController: UIPageViewController {
+final class OnboardingPageViewController: UIPageViewController {
     
     // MARK: - IB Outlets
     private lazy var pageControl: UIPageControl = {

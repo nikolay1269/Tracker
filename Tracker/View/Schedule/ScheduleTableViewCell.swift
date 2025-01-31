@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ScheduleTableViewCell: UITableViewCell {
+final class ScheduleTableViewCell: UITableViewCell {
     
     private let dayOfWeekSwitch = UISwitch()
     var dayOfWeekValueChanged: ((Bool) -> Void)?

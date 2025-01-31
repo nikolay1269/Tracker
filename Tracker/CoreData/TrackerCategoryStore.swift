@@ -9,31 +9,6 @@ import Foundation
 import CoreData
 import UIKit
 
-enum TrackerCategoryStoreError: Error {
-    case decodingKeyErrorInvalidId
-    case decodingKeyErrorInvalidName
-}
-
-protocol TrackerCategoryStoreProtocol {
-    var numberOfSections: Int { get }
-    func numberOfCategories() -> Int
-    func allTrackerCategories() -> [TrackerCategory]
-    func titleForSection(_ section: Int) -> String
-    func category(at: IndexPath) -> TrackerCategory?
-    func filteredCategory(at: IndexPath) -> TrackerCategory?
-    func addRecord(_ record: TrackerCategory) throws
-    func numbersOfFilteredTrackersInSection(_ section: Int) -> Int
-    func filteredTracker(at: IndexPath) throws -> Tracker?
-    func setCurrentDate(date: Date)
-    func setSearchText(text: String)
-    func setCurrentFilter(filter: TrackerFilter)
-    func numberOfItems(filter: TrackerFilter, searchText: String?) -> Int
-}
-
-protocol TrackerCategoryStoreDelegate: AnyObject {
-    func didUpdate()
-}
-
 final class TrackerCategoryStore: NSObject {
     
     // MARK: - Public Properties

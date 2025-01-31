@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CreateTrackerCategoryViewController: UIViewController {
+final class CreateTrackerCategoryViewController: UIViewController {
     
     var viewModel: TrackerCategoriesViewModel?
 

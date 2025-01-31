@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TrackerCategoriesViewController: UIViewController {
+final class TrackerCategoriesViewController: UIViewController {
 
     // MARK: - IB Outlets
     private lazy var trackerCategoriesTableView: UITableView = {

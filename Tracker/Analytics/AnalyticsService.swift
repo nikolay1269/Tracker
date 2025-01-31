@@ -9,18 +9,6 @@ import Foundation
 import Foundation
 import YandexMobileMetrica
 
-enum ClickItem: String {
-    case add_track
-    case track
-    case filter
-    case edit
-    case delete
-}
-
-enum Screen: String {
-    case main = "Main"
-}
-
 final class AnalyticService {
     
     static let shared = AnalyticService()

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class StatisticsTableViewCell: UITableViewCell {
+final class StatisticsTableViewCell: UITableViewCell {
     
     // MARK: - IB Outlets
     private lazy var valueLabel: UILabel = {
