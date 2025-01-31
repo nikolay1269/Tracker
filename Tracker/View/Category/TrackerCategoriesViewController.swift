@@ -15,7 +15,7 @@ final class TrackerCategoriesViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(TrackerCategoryTableViewCell.self, forCellReuseIdentifier: celldentifier)
+        tableView.register(TrackerCategoryTableViewCell.self, forCellReuseIdentifier: TrackerCategoryTableViewCell.celldentifier)
         tableView.separatorStyle = .singleLine
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tableView.separatorColor = UIColor(named: "YPGray")
@@ -142,20 +142,15 @@ extension TrackerCategoriesViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: celldentifier, for: indexPath) as? TrackerCategoryTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TrackerCategoryTableViewCell.celldentifier,
+                                                       for: indexPath) as? TrackerCategoryTableViewCell else {
             return UITableViewCell()
         }
         
         let trackerCategoryViewModel = viewModel.tracketCategoryViewModelAt(indexPath)
         cell.viewModel = trackerCategoryViewModel
-        cell.accessoryType = .none
-        cell.backgroundColor = UIColor(named: "TextFieldBackgroundColor")
-        cell.selectionStyle = .none
-        if indexPath.row == (viewModel?.numberOfCategories() ?? 0) - 1 {
-            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: tableView.bounds.size.width)
-        } else {
-            cell.separatorInset = UIEdgeInsets.zero
-        }
+        let isLastRow = indexPath.row == (viewModel.numberOfCategories()) - 1
+        cell.configureInsets(hide: isLastRow)
         return cell
     }
 }
