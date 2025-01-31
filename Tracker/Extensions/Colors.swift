@@ -12,34 +12,18 @@ final class Colors {
     static let shared = Colors()
     
     let leftNavigationBarButtonItemColor = UIColor { (traits: UITraitCollection) -> UIColor in
-        if traits.userInterfaceStyle == .light {
-            return UIColor.black
-        } else {
-            return UIColor.white
-        }
+        traits.userInterfaceStyle == .light ? UIColor.black : UIColor.white
     }
     
     let backgroundColor = UIColor { (traits: UITraitCollection) -> UIColor in
-        if traits.userInterfaceStyle == .light {
-            return UIColor(named: "YPWhite") ?? .white
-        } else {
-            return UIColor(named: "YPBlack") ?? .black
-        }
+        traits.userInterfaceStyle == .light ? UIColor(named: "YPWhite") ?? .white : UIColor(named: "YPBlack") ?? .black
     }
     
     let tabBarTopBorderColor = UIColor { (traits: UITraitCollection) -> UIColor in
-        if traits.userInterfaceStyle == .light {
-            return UIColor(named: "YPGray") ?? .gray
-        } else {
-            return .black
-        }
+        traits.userInterfaceStyle == .light ? UIColor(named: "YPGray") ?? .gray : .black
     }
     
     let datePickerBackgroundColor = UIColor { (traits: UITraitCollection) -> UIColor in
-        if traits.userInterfaceStyle == .light {
-            return UIColor(named: "DatePickerColor") ?? .gray
-        } else {
-            return UIColor(named: "DatePickerColor") ?? .gray
-        }
+        traits.userInterfaceStyle == .light ? UIColor(named: "DatePickerColor") ?? .gray : UIColor(named: "DatePickerColor") ?? .gray
     }
 }

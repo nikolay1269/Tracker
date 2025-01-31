@@ -68,19 +68,14 @@ final class CreateTrackerCategoryViewController: UIViewController {
     }
     
     @objc private func trackerCategoryNameTextFieldEditingChanged() {
-        let enable = !(trackerCategoryNameTextField.text?.isEmpty ?? true)
-        changeDoneButtonEnable(enable)
+        let isEnabled = trackerCategoryNameTextField.text?.isEmpty == false
+        changeDoneButtonEnable(isEnabled)
     }
     
     // MARK: - Private Methods
-    private func changeDoneButtonEnable(_ enable: Bool) {
-        doneButton.isEnabled = enable
-        switch(enable) {
-        case true:
-            doneButton.backgroundColor = UIColor(named: "YPBlack")
-        case false:
-            doneButton.backgroundColor = UIColor(named: "YPGray")
-        }
+    private func changeDoneButtonEnable(_ isEnabled: Bool) {
+        doneButton.isEnabled = isEnabled
+        doneButton.backgroundColor = isEnabled ? UIColor(named: "YPBlack") : UIColor(named: "YPGray")
     }
     
     private func setupLayout() {

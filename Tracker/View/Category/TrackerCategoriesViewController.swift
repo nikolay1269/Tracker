@@ -113,8 +113,8 @@ final class TrackerCategoriesViewController: UIViewController {
         ])
     }
     
-    private func changeEmptyViewVisibility(_ visible: Bool) {
-        emptyView?.isHidden = !visible
+    private func changeEmptyViewVisibility(_ isVisible: Bool) {
+        emptyView?.isHidden = !isVisible
     }
 }
 

@@ -102,7 +102,7 @@ final class TrackersViewController: UIViewController {
             self.changeEmptyViewAndFilterButtonVisibility()
             self.collectionView?.reloadData()
         }
-        AnalyticService.shared.sendClickEvent(screen: .main, item: .add_track)
+        AnalyticService.shared.sendClickEvent(screen: .main, item: .addTrack)
         self.present(selectTrackerTypeViewController, animated: true)
     }
     
@@ -460,18 +460,18 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     }
     
     private func makePreview(indexPath: IndexPath) -> UIViewController {
-        let vc = UIViewController()
+        let contextMenuViewController = UIViewController()
         guard let currentCell = collectionView?.cellForItem(at: indexPath) as? TrackerCollectionViewCell else {
-            return vc
+            return contextMenuViewController
         }
         let renderer = UIGraphicsImageRenderer(size: currentCell.mainView.bounds.size)
         let image = renderer.image { ctx in
             currentCell.mainView.drawHierarchy(in: currentCell.mainView.bounds, afterScreenUpdates: true)
         }
         let imageView = UIImageView(image: image)
-        vc.view = imageView
-        vc.preferredContentSize = imageView.frame.size
-        return vc
+        contextMenuViewController.view = imageView
+        contextMenuViewController.preferredContentSize = imageView.frame.size
+        return contextMenuViewController
     }
 }
 
